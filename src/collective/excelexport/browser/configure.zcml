@@ -1,0 +1,13 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="collective.excelexport">
+
+    <!-- Publish static files -->
+    <browser:resourceDirectory
+      name="collective.excelexport"
+      directory="static"
+      />
+
+</configure>
