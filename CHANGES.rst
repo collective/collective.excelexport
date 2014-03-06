@@ -6,5 +6,5 @@ Changelog
 ----------------
 
 - Initial release.
-  [tdesvenain]
+  [thomasdesvenain]
 
