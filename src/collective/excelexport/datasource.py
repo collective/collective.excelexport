@@ -1,11 +1,12 @@
 from zope.interface import implements, Interface
 from zope.component import adapts
-from zope.schema import getFieldsInOrder
+from zope.component import getAdapters
 
 from plone import api
 from Products.CMFCore.interfaces import IFolderish
 
 from collective.excelexport.interfaces import IDataSource
+from collective.excelexport.interfaces import IExportableFactory
 
 
 class DataSource(object):
@@ -42,11 +43,19 @@ class DataSource(object):
         data = []
         for p_type in sorted(p_types_objects.keys()):
             p_type_fti = ttool[p_type]
-            title = p_type_fti.Title()
-            schema = p_type_fti.lookupSchema()
-            fields = [f for f in getFieldsInOrder(schema)]
+            factories = getAdapters((p_type_fti, self.context, self.request),
+                                    IExportableFactory)
+            factories = [factory for name, factory in factories
+                         if not factory.portal_types or p_type in factory.portal_types]
+
+            exportables = []
+            for factory in factories:
+                exportables.extend(factory.get_exportables())
+
+            title  = p_type_fti.Title()
             data.append({'title': title,
                          'objects': p_types_objects[p_type],
-                         'fields': fields})
+                         'exportables': exportables})
 
         return data
+

@@ -18,7 +18,7 @@ class IDataSource(Interface):
         """Gets a list of dictionaries with three keys :
             title: the title of the sheet
             objects: the list of objects
-            fields: the names of the fields to render
+            exportables: the names of the exportables to render
         """
 
 
@@ -31,34 +31,31 @@ class IStyles(Interface):
     content = Attribute("""xlwt Style object for contents""")
 
 
-class IFieldRenderer(Interface):
-    """Render a value and a style from a field considering the value
-    provided by a named adapter that adapts a field object,
-    the export context and the request
+class IExportableFactory(Interface):
+    """Adapter to get exportables (ex: fields, history, etc)
+    we can have many exportable factories for a fti
+    we can restrict an exportable factory on few portal types
+    """
+    portal_types = Attribute("""list: portal_types on wich this factory applies""")
+
+    def get_exportables(self):
+        """List of exportables for the content type
+        """
+
+
+class IExportable(Interface):
+    """Render a value and a style from something, for example a field
     """
 
     def render_header(self):
         """Gets the value to render on the first row of excel sheet for this field
         """
 
-    def render_value(self, value):
-        """Gets the value to render in excel file from content value
+    def render_value(self, obj):
+        """Gets the value to render in excel file from content
         """
 
-    def render_style(self, value, base_style):
+    def render_style(self, obj, base_style):
         """Gets the style rendering of the
         base_style is the default style of a cell for content
         """
-
-
-class IValueGetter(Interface):
-    """Adapter to get a value from fieldname
-    """
-
-    def get(self, fieldname):
-        """Get value from fieldname
-        """
-
-class IExportablePropertiesFactory(Interface):
-    """Named utility to get exportable properties (ex: fields, history, etc)
-    """

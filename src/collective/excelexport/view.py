@@ -5,13 +5,12 @@ from StringIO import StringIO
 import xlwt
 from xlwt import CompoundDoc
 
-from Products.Five.browser import BrowserView
 from zope.component import getMultiAdapter
-
-from collective.excelexport.interfaces import IDataSource, IFieldRenderer,\
-    IStyles
-from collective.excelexport.interfaces import IValueGetter
 from zope.component.interfaces import ComponentLookupError
+from Products.Five.browser import BrowserView
+
+from collective.excelexport.interfaces import IDataSource, IStyles
+
 
 class ExcelExport(BrowserView):
     """Excel export view
@@ -55,24 +54,16 @@ class ExcelExport(BrowserView):
             except Exception:
                 sheet = xlDoc.add_sheet(sheet_title + ' ' + str(sheetnum))
 
-            renderers = dict([(fieldname, getMultiAdapter((field, self.context, self.request),
-                                               interface=IFieldRenderer))
-                             for fieldname, field in sheetinfo['fields']])
-            for fieldnum, fieldinfo in enumerate(sheetinfo['fields']):
-                renderer = renderers[fieldinfo[0]]
-                sheet.write(0, fieldnum,
-                            renderer.render_header(),
+            for exportablenum, exportable in enumerate(sheetinfo['exportables']):
+                sheet.write(0, exportablenum,
+                            exportable.render_header(),
                             copy(styles.headers))
 
             for rownum, obj in enumerate(sheetinfo['objects']):
-                valuegetter = IValueGetter(obj)
-                for fieldnum, fieldinfo in enumerate(sheetinfo['fields']):
-                    fieldname = fieldinfo[0]
-                    value = valuegetter.get(fieldname)
-                    renderer = renderers[fieldname]
-                    sheet.write(rownum + 1, fieldnum,
-                                renderer.render_value(value),
-                                renderer.render_style(value, copy(styles.content)))
+                for exportablenum, exportable in enumerate(sheetinfo['exportables']):
+                    sheet.write(rownum + 1, exportablenum,
+                                exportable.render_value(obj),
+                                exportable.render_style(obj, copy(styles.content)))
 
         doc = CompoundDoc.XlsDoc()
         data = xlDoc.get_biff_data()
