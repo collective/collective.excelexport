@@ -1,9 +1,11 @@
 from zope.interface import implements, Interface
 from zope.component import adapts
 from zope.component import getAdapters
+from zope.component import getUtility
 from datetime import datetime
 
 from plone import api
+from plone.behavior.interfaces import IBehavior
 from Products.CMFCore.interfaces import IFolderish
 
 from collective.excelexport.interfaces import IDataSource
@@ -47,15 +49,31 @@ class DataSource(object):
         ttool = api.portal.get_tool('portal_types')
         data = []
         for p_type in sorted(p_types_objects.keys()):
+            # get exportables for each content type
             p_type_fti = ttool[p_type]
             factories = getAdapters((p_type_fti, self.context, self.request),
                                     IExportableFactory)
-            factories = [factory[1] for factory in factories
-                         if not factory[1].portal_types
-                         or p_type in factory[1].portal_types]
-
-            exportables = []
+            filtered_factories = []
             for factory in factories:
+                factory = factory[1]
+                if factory.portal_types and p_type not in factory.portal_types:
+                    # filter on content types if it is set
+                    continue
+
+                if factory.behaviors:
+                    # filter on behaviors if it is set
+                    for behavior_id in p_type_fti.behaviors:
+                        behavior = getUtility(IBehavior, behavior_id).interface
+                        if behavior in factory.behaviors:
+                            break
+                    else:
+                        continue
+
+                filtered_factories.append(factory)
+
+            # get the list of exportables from factories
+            exportables = []
+            for factory in filtered_factories:
                 exportables.extend(factory.get_exportables())
 
             title  = p_type_fti.Title()
