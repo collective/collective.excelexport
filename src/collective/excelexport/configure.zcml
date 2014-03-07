@@ -8,66 +8,7 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-    <i18n:registerTranslations directory="locales" />
-
-    <five:registerPackage package="." initialize=".initialize" />
-
-    <include package="plone.api" />
-
-    <include package=".browser" />
-    <include package=".content" />
-
-    <genericsetup:registerProfile
-        name="default"
-        title="collective.excelexport"
-        directory="profiles/default"
-        description="Installs the collective.excelexport add-on."
-        provides="Products.GenericSetup.interfaces.EXTENSION"
-        />
-
-    <genericsetup:importStep
-        name="collectiveexcelexport-postInstall"
-        title="collective.excelexport post_install import step"
-        description="Post install import step from collective.excelexport"
-        handler=".setuphandlers.post_install">
-    </genericsetup:importStep>
-
-    <browser:page name="collective.excelexport"
-             for="*"
-             class=".view.ExcelExport"
-             permission="zope2.View"
-             />
-
-    <adapter factory=".datasource.DataSource"
-             provides=".interfaces.IDataSource"
-              />
-
-    <adapter factory=".styles.Styles"
-             provides=".interfaces.IStyles"
-              />
-
-    <adapter factory=".fieldrenderers.DexterityValueGetter"
-             provides="collective.excelexport.fieldrenderers.IFieldValueGetter" />
-
-    <adapter factory=".fieldrenderers.FieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
-    <adapter factory=".fieldrenderers.FileFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
-    <adapter factory=".fieldrenderers.CollectionFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
-    <adapter factory=".fieldrenderers.DateFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
-    <adapter factory=".exportables.DexterityFieldsExportableFactory"
-             provides="collective.excelexport.interfaces.IExportableFactory"
-             name="fields" />
-
-    <adapter zcml:condition="installed z3c.relationfield"
-             factory=".fieldrenderers.RelationFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
+    <include file="minimal.zcml" />
+    <include file="dexterityfields.zcml" />
 
 </configure>

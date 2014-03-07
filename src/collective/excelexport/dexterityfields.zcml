@@ -1,0 +1,34 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:grok="http://namespaces.zope.org/grok"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="collective.excelexport">
+
+    <adapter factory=".dexterityfields.DexterityValueGetter"
+             provides="collective.excelexport.dexterityfields.IFieldValueGetter" />
+
+    <adapter factory=".dexterityfields.FieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
+    <adapter factory=".dexterityfields.FileFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
+    <adapter factory=".dexterityfields.CollectionFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
+    <adapter factory=".dexterityfields.DateFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
+    <adapter factory=".dexterityfields.DexterityFieldsExportableFactory"
+             provides="collective.excelexport.interfaces.IExportableFactory"
+             name="fields" />
+
+    <adapter zcml:condition="installed z3c.relationfield"
+             factory=".dexterityfields.RelationFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
+</configure>

@@ -45,8 +45,9 @@ class DataSource(object):
             p_type_fti = ttool[p_type]
             factories = getAdapters((p_type_fti, self.context, self.request),
                                     IExportableFactory)
-            factories = [factory for name, factory in factories
-                         if not factory.portal_types or p_type in factory.portal_types]
+            factories = [factory[1] for factory in factories
+                         if not factory[1].portal_types
+                         or p_type in factory[1].portal_types]
 
             exportables = []
             for factory in factories:
