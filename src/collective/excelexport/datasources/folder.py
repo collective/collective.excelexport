@@ -24,7 +24,7 @@ class FolderContentsDataSource(object):
         self.request = request
 
     def get_filename(self):
-        return "%s-%s" % (
+        return "%s-%s.xls" % (
                 datetime.now().strftime("%d-%m-%Y"), self.context.getId())
 
     def get_objects(self):

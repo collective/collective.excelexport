@@ -2,6 +2,6 @@
 <metadata>
   <version>1</version>
   <dependencies>
-    <dependency>profile-collective.excelexport:dexterity</dependency>
+    <dependency>profile-collective.excelexport:default</dependency>
   </dependencies>
 </metadata>

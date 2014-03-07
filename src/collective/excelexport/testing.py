@@ -29,6 +29,9 @@ class CollectiveExcelexportLayer(PloneSandboxLayer):
         # Load ZCML
         self.loadZCML(package=collective.excelexport,
                       name='testing.zcml')
+        import plone.app.dexterity
+        self.loadZCML(package=plone.app.dexterity,
+                      name='configure.zcml')
         for p in self.products:
             z2.installProduct(app, p)
 

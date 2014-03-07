@@ -50,6 +50,8 @@ setup(
             'ecreall.helpers.testing',
             'plone.app.testing',
             'plone.app.robotframework',
+            'plone.app.dexterity',
+            'xlrd',
         ],
     },
     entry_points="""
