@@ -1,6 +1,7 @@
 from zope.interface import implements, Interface
 from zope.component import adapts
 from zope.component import getAdapters
+from datetime import datetime
 
 from plone import api
 from Products.CMFCore.interfaces import IFolderish
@@ -19,6 +20,10 @@ class DataSource(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def get_filename(self):
+        return "%s-%s" % (
+                datetime.now().strftime("%d-%m-%Y"), self.context.getId())
 
     def get_objects(self):
         catalog = api.portal.get_tool('portal_catalog')

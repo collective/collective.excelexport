@@ -14,6 +14,10 @@ class IDataSource(Interface):
     provided by a named adapter that adapts the context and the request
     """
 
+    def get_filename(self):
+        """Gets the file name of the exported excel
+        """
+
     def get_sheets_data(self):
         """Gets a list of dictionaries with three keys :
             title: the title of the sheet

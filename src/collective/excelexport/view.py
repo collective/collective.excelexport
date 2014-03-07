@@ -1,5 +1,4 @@
 from copy import copy
-from datetime import datetime
 from StringIO import StringIO
 
 import xlwt
@@ -17,17 +16,7 @@ class ExcelExport(BrowserView):
     """
     sheet = NotImplemented
 
-    def get_filename(self):
-        return "%s-%s" % (
-                datetime.now().strftime("%d-%m-%Y"), self.__name__)
-
     def __call__(self):
-        self.request.response.setHeader(
-            'Content-type', 'application/vnd.ms-excel;charset=windows-1252')
-        self.request.response.setHeader(
-            'Content-disposition',
-            'attachment; filename="%s"' % self.get_filename()
-            )
         self.request.RESPONSE.setHeader('Cache-Control', 'no-cache')
         self.request.RESPONSE.setHeader('Pragma', 'no-cache')
 
@@ -36,8 +25,9 @@ class ExcelExport(BrowserView):
 
         # get all values to display, one value by sheet
         policy = self.request.get('excelexport.policy', '')
-        sheetsinfo = getMultiAdapter((self.context, self.request),
-                                     interface=IDataSource, name=policy).get_sheets_data()
+        datasource = getMultiAdapter((self.context, self.request),
+                                     interface=IDataSource, name=policy)
+        sheetsinfo = datasource.get_sheets_data()
 
         try:
             styles = getMultiAdapter((self.context, self.request),
@@ -69,4 +59,11 @@ class ExcelExport(BrowserView):
         data = xlDoc.get_biff_data()
         doc.save(string_buffer, data)
 
+
+        self.request.response.setHeader(
+            'Content-type', 'application/vnd.ms-excel;charset=windows-1252')
+        self.request.response.setHeader(
+            'Content-disposition',
+            'attachment; filename="%s"' % datasource.get_filename()
+            )
         return string_buffer.getvalue()

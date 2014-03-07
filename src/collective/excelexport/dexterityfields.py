@@ -1,13 +1,17 @@
-from zope.interface.interface import Interface
-from zope.schema.interfaces import IField, IDate, ICollection
-from zope.component import adapts
+from zope.interface import Interface
+from zope.schema.interfaces import IField, IDate, ICollection,\
+    IVocabularyFactory
 from zope.schema import getFieldsInOrder
+from zope.component import adapts
 from zope.component import getMultiAdapter
+from zope.component._api import getUtility
+from zope.i18n import translate
 from zope.interface.declarations import implements
 
 from plone.dexterity.interfaces import IDexterityFTI
-from plone.namedfile.editor import INamedFileField
 from plone.dexterity.interfaces import IDexterityContent
+from plone.namedfile.interfaces import INamedField
+from plone.schemaeditor.schema import IChoice
 
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.interfaces import IExportableFactory
@@ -63,14 +67,14 @@ class BaseFieldRenderer(object):
         return IFieldValueGetter(obj).get(self.field)
 
     def render_header(self):
-        return self.field.title
+        return translate(self.field.title, context=self.request)
 
     def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
         return self.get_value(obj)
 
-    def render_collection_entry(self, value):
+    def render_collection_entry(self, obj, value):
+        """Render a value element if the field is a sub field of a collection
+        """
         return str(value or "")
 
     def render_style(self, value, base_style):
@@ -85,7 +89,7 @@ class FieldRenderer(BaseFieldRenderer):
 
 
 class FileFieldRenderer(BaseFieldRenderer):
-    adapts(INamedFileField, Interface, Interface)
+    adapts(INamedField, Interface, Interface)
 
     def render_value(self, obj):
         """Gets the value to render in excel file from content value
@@ -97,12 +101,40 @@ class FileFieldRenderer(BaseFieldRenderer):
 class DateFieldRenderer(BaseFieldRenderer):
     adapts(IDate, Interface, Interface)
 
-    def render_collection_entry(self, value):
+    def render_collection_entry(self, obj, value):
         return value.strftime("%Y/%m/%d")
 
     def render_style(self, obj, base_style):
         base_style.num_format_str = 'yyyy/mm/dd'
         return base_style
+
+
+class ChoiceFieldRenderer(BaseFieldRenderer):
+    adapts(IChoice, Interface, Interface)
+
+    def _get_vocabulary_value(self, obj, value):
+        if not value:
+            return value
+
+        vocabulary = self.field.vocabulary
+        if not vocabulary:
+            vocabularyName = self.field.vocabularyName
+            if vocabularyName:
+                vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
+
+        if vocabulary:
+            return vocabulary.getTermByToken(value).title or value
+        else:
+            return value
+
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        voc_value = self._get_vocabulary_value(obj, value)
+        return voc_value
+
+    def render_collection_entry(self, obj, value):
+        voc_value = self._get_vocabulary_value(obj, value)
+        return voc_value and translate(voc_value, context=self.request) or ""
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
@@ -115,7 +147,7 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         sub_renderer = getMultiAdapter((self.field.value_type,
                                         self.context, self.request),
                                         interface=IExportable)
-        return value and "\n".join([str(sub_renderer.render_collection_entry(v))
+        return value and "\n".join([str(sub_renderer.render_collection_entry(obj, v))
                                     for v in value]) or ""
 
 try:
@@ -124,13 +156,57 @@ try:
     class RelationFieldRenderer(BaseFieldRenderer):
         adapts(IRelation, Interface, Interface)
 
-        def render_collection_entry(self, value):
-            return value and value.to_object.Title() or u""
-
         def render_value(self, obj):
             value = self.get_value(obj)
+            return self.render_collection_entry(obj, value)
+
+        def render_collection_entry(self, obj, value):
             return value and value.to_object.Title() or u""
 
 except:
     HAS_RELATIONFIELD = False
 
+
+try:
+    from collective.z3cform.datagridfield.interfaces import IRow
+    HAS_DATAGRIDFIELD = True
+    class DictRowFieldRenderer(BaseFieldRenderer):
+        adapts(IRow, Interface, Interface)
+
+        def render_collection_entry(self, obj, value):
+            fields = getFieldsInOrder(self.field.schema)
+            field_renderings = []
+            for fieldname, field in fields:
+                sub_renderer = getMultiAdapter((field,
+                                                self.context, self.request),
+                                                interface=IExportable)
+                field_renderings.append("%s : %s" % (
+                                        sub_renderer.render_header(),
+                                        sub_renderer.render_collection_entry(obj,
+                                                value.get(fieldname))))
+
+            return " / ".join([r for r in field_renderings])
+
+        def render_value(self, obj):
+            value = self.get_value(obj)
+            return self.render_collection_entry(obj, value)
+
+except:
+    HAS_DATAGRIDFIELD = False
+
+
+try:
+    from collective.contact.widget.interfaces import IContactChoice
+    HAS_CONTACTS = True
+    class ContactFieldRenderer(BaseFieldRenderer):
+        adapts(IContactChoice, Interface, Interface)
+
+        def render_value(self, obj):
+            value = self.get_value(obj)
+            return self.render_collection_entry(obj, value)
+
+        def render_collection_entry(self, obj, value):
+            return value and value.to_object.get_full_title() or u""
+
+except:
+    HAS_CONTACTS = False
