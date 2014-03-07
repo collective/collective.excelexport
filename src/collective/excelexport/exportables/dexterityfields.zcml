@@ -13,7 +13,7 @@
              name="fields" />
 
     <adapter factory=".dexterityfields.DexterityValueGetter"
-             provides="collective.excelexport.dexterityfields.IFieldValueGetter" />
+             provides=".dexterityfields.IFieldValueGetter" />
 
     <adapter factory=".dexterityfields.FieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
@@ -29,6 +29,7 @@
 
     <adapter factory=".dexterityfields.ChoiceFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
+
     <adapter zcml:condition="installed z3c.relationfield"
              factory=".dexterityfields.RelationFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
@@ -41,4 +42,12 @@
              factory=".dexterityfields.ContactFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
+
+  <genericsetup:registerProfile
+      name="dexterity"
+      title="collective.excelexport dexterity contents"
+      directory="profiles/dexterity"
+      description="Steps to ease tests of collective.excelexport"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
 </configure>

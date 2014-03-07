@@ -8,7 +8,9 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-    <include file="minimal.zcml" />
-    <include package=".exportables" />
+
+    <adapter factory=".folder.FolderContentsDataSource"
+             provides="collective.excelexport.interfaces.IDataSource"
+              />
 
 </configure>

@@ -12,7 +12,7 @@ from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.interfaces import IExportableFactory
 
 
-class DataSource(object):
+class FolderContentsDataSource(object):
     """Gets the fields and objects to serialize in excel file
     provided by a named adapter that adapts the context and the request
     """
