@@ -13,4 +13,7 @@
              provides="collective.excelexport.interfaces.IDataSource"
               />
 
+    <include package=".eeafaceted"
+             zcml:condition="installed eea.facetednavigation" />
+
 </configure>

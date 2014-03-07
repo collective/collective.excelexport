@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="collective.excelexport">
+
+  <browser:page for="eea.facetednavigation.interfaces.IFacetedNavigable"
+        name="eea_excel_export_url"
+        class=".view.ExportUrl"
+        attribute="export_url"
+        permission="zope2.View" />
+
+  <adapter factory=".datasource.FacetedSearchDataSource"
+           provides="collective.excelexport.interfaces.IDataSource"
+           name="eea.facetednavigation"
+            />
+
+</configure>
