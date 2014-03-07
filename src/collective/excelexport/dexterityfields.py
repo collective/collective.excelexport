@@ -22,6 +22,7 @@ class DexterityFieldsExportableFactory(object):
     implements(IExportableFactory)
 
     portal_types = None
+    behaviors = None
 
     def __init__(self, fti, context, request):
         self.fti = fti

@@ -38,9 +38,10 @@ class IStyles(Interface):
 class IExportableFactory(Interface):
     """Adapter to get exportables (ex: fields, history, etc)
     we can have many exportable factories for a fti
-    we can restrict an exportable factory on few portal types
+    we can restrict an exportable factory on few portal types or behaviors
     """
     portal_types = Attribute("""list: portal_types on wich this factory applies""")
+    behaviors = Attribute("""list of interfaces: if set, the factory applies on types implementing one of those behaviors""")
 
     def get_exportables(self):
         """List of exportables for the content type
