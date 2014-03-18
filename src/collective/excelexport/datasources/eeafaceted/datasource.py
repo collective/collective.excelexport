@@ -1,10 +1,16 @@
 from datetime import datetime
 from copy import copy
 
-from collective.excelexport.datasources.folder import BaseContentsDataSource
+from zope.component import adapts
+from zope.interface import Interface
+
+from eea.facetednavigation.subtypes.interfaces import IFacetedNavigable
+
+from collective.excelexport.datasources.base import BaseContentsDataSource
 
 
 class FacetedSearchDataSource(BaseContentsDataSource):
+    adapts(IFacetedNavigable, Interface)
 
     def get_filename(self):
         return "%s-%s-search.xls" % (
