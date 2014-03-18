@@ -12,28 +12,19 @@ from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.interfaces import IExportableFactory
 
 
-class FolderContentsDataSource(object):
-    """Gets the fields and objects to serialize in excel file
-    provided by a named adapter that adapts the context and the request
+class BaseContentsDataSource(object):
+    """
+    Base class for a datasource that exports contents
+    Gets the fields and objects to serialize in excel file
+    provided by a named adapter that adapts the fti, the context and the request
+
+    group them by portal type (one sheet by portal type)
     """
     implements(IDataSource)
-    adapts(IFolderish, Interface)
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
-
-    def get_filename(self):
-        return "%s-%s.xls" % (
-                datetime.now().strftime("%d-%m-%Y"), self.context.getId())
-
-    def get_objects(self):
-        catalog = api.portal.get_tool('portal_catalog')
-        brains = catalog.searchResults(REQUEST=self.request,
-                                       path={'query': '/'.join(self.context.getPhysicalPath()),
-                                             'depth': 1})
-        return [b.getObject() for b in brains]
-
 
     def get_sheets_data(self):
         """Gets a list of dictionaries with three keys :
@@ -83,3 +74,20 @@ class FolderContentsDataSource(object):
 
         return data
 
+
+class FolderContentsDataSource(BaseContentsDataSource):
+    """Export the contents of a folder
+    """
+    implements(IDataSource)
+    adapts(IFolderish, Interface)
+
+    def get_filename(self):
+        return "%s-%s.xls" % (
+                datetime.now().strftime("%d-%m-%Y"), self.context.getId())
+
+    def get_objects(self):
+        catalog = api.portal.get_tool('portal_catalog')
+        brains = catalog.searchResults(REQUEST=self.request,
+                                       path={'query': '/'.join(self.context.getPhysicalPath()),
+                                             'depth': 1})
+        return [b.getObject() for b in brains]

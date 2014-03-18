@@ -1,10 +1,10 @@
 from datetime import datetime
 from copy import copy
 
-from collective.excelexport.datasources.folder import FolderContentsDataSource
+from collective.excelexport.datasources.folder import BaseContentsDataSource
 
 
-class FacetedSearchDataSource(FolderContentsDataSource):
+class FacetedSearchDataSource(BaseContentsDataSource):
 
     def get_filename(self):
         return "%s-%s-search.xls" % (
@@ -15,6 +15,6 @@ class FacetedSearchDataSource(FolderContentsDataSource):
         params = copy(self.request.form)
         if 'excelexport.policy' in params:
             del params['excelexport.policy']
-
+        #@TODO: check this is not batched
         brains = faceted_query_view.query(**params)
         return [b.getObject() for b in brains]
