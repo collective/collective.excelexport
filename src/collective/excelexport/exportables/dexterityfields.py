@@ -35,46 +35,52 @@ def non_fieldset_fields(schema):
     return [f for f in fields if f not in fieldset_fields]
 
 
+def get_ordered_fields(fti):
+    # this code is much complicated because we have to get sure
+    # we get the fields in the order of the fieldsets
+    # the order of the fields in the fieldsets can differ
+    # of the getFieldsInOrder(schema) order...
+    # that's because fields from different schemas
+    # can take place in the same fieldset
+    schema = fti.lookupSchema()
+    fieldset_fields = {}
+    ordered_fieldsets = ['default']
+    for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
+        ordered_fieldsets.append(fieldset.__name__)
+        fieldset_fields[fieldset.__name__] = fieldset.fields
+
+    fieldset_fields['default'] = non_fieldset_fields(schema)
+
+    # Get the behavior fields
+    fields = getFieldsInOrder(schema)
+    for behavior_id in fti.behaviors:
+        schema = getUtility(IBehavior, behavior_id).interface
+        if not IFormFieldProvider.providedBy(schema):
+            continue
+
+        fields.extend(getFieldsInOrder(schema))
+        for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
+            fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
+            ordered_fieldsets.append(fieldset.__name__)
+
+        fieldset_fields['default'].extend(non_fieldset_fields(schema))
+
+    ordered_fields = []
+    for fieldset in ordered_fieldsets:
+        ordered_fields.extend(fieldset_fields[fieldset])
+
+    fields.sort(key=lambda field: ordered_fields.index(field[0]))
+    return fields
+
+
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
     adapts(IDexterityFTI, Interface, Interface)
+    weight = 100
 
     def get_exportables(self):
-        # this code is much complicated because we have to get sure
-        # we get the fields in the order of the fieldsets
-        # the order of the fields in the fieldsets can differ
-        # of the getFieldsInOrder(schema) order...
-        # that's because fields from different schemas
-        # can take place in the same fieldset
-        schema = self.fti.lookupSchema()
-        fieldset_fields = {}
-        ordered_fieldsets = ['default']
-        for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
-            ordered_fieldsets.append(fieldset.__name__)
-            fieldset_fields[fieldset.__name__] = fieldset.fields
-
-        fieldset_fields['default'] = non_fieldset_fields(schema)
-
-        # Get the behavior fields
-        fields = getFieldsInOrder(schema)
-        for behavior_id in self.fti.behaviors:
-            schema = getUtility(IBehavior, behavior_id).interface
-            if not IFormFieldProvider.providedBy(schema):
-                continue
-
-            fields.extend(getFieldsInOrder(schema))
-            for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
-                fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
-                ordered_fieldsets.append(fieldset.__name__)
-
-            fieldset_fields['default'].extend(non_fieldset_fields(schema))
-
-        ordered_fields = []
-        for fieldset in ordered_fieldsets:
-            ordered_fields.extend(fieldset_fields[fieldset])
-
-        fields.sort(key=lambda field: ordered_fields.index(field[0]))
+        fields = get_ordered_fields(self.fti)
         exportables = [getMultiAdapter((field[1], self.context, self.request),
                                         interface=IExportable) for field in fields]
         return exportables
@@ -179,7 +185,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             term = None
 
         if term:
-            return term.title or value
+            return translate(term.title, context=self.request) or value
         else:
             return value
 

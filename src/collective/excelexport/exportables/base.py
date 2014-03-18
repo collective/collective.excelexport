@@ -6,6 +6,7 @@ class BaseExportableFactory(object):
 
     portal_types = None
     behaviors = None
+    weight = 1000
 
     def __init__(self, fti, context, request):
         self.fti = fti

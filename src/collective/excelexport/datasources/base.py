@@ -56,7 +56,7 @@ class BaseContentsDataSource(object):
             factories = getAdapters((p_type_fti, self.context, self.request),
                                     IExportableFactory)
             filtered_factories = []
-            for factory in factories:
+            for factory in sorted(factories, key=lambda f:f[1].weight):
                 factory_name, factory = factory
                 if factory.portal_types and p_type not in factory.portal_types:
                     # filter on content types if it is set
