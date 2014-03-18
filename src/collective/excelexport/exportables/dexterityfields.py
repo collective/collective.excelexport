@@ -1,3 +1,5 @@
+from io import StringIO
+
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory
@@ -15,6 +17,8 @@ from plone.schemaeditor.schema import IChoice
 
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.interfaces import IExportableFactory
+from plone.app.textfield.interfaces import IRichText
+from Products.CMFCore.utils import getToolByName
 
 
 class DexterityFieldsExportableFactory(object):
@@ -151,6 +155,22 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         return value and "\n".join([str(sub_renderer.render_collection_entry(obj, v))
                                     for v in value]) or ""
 
+
+class RichTextFieldRenderer(BaseFieldRenderer):
+    adapts(IRichText, Interface, Interface)
+
+    def render_value(self, obj):
+        """Gets the value to render in excel file from content value
+        """
+        value = self.get_value(obj)
+        if not value:
+            return ""
+        ptransforms = getToolByName(obj, 'portal_transforms')
+        text = ptransforms.convert('text_to_html', value.output).getData()
+        if len(text) > 50:
+            return text[:47] + "..."
+
+
 try:
     from z3c.relationfield.interfaces import IRelation
     HAS_RELATIONFIELD = True
@@ -207,7 +227,7 @@ try:
             return self.render_collection_entry(obj, value)
 
         def render_collection_entry(self, obj, value):
-            return value and value.to_object.get_full_title() or u""
+            return value and value.to_object and value.to_object.get_full_title() or u""
 
 except:
     HAS_CONTACTS = False

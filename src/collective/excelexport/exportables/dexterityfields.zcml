@@ -30,6 +30,9 @@
     <adapter factory=".dexterityfields.ChoiceFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
+    <adapter factory=".dexterityfields.RichTextFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
     <adapter zcml:condition="installed z3c.relationfield"
              factory=".dexterityfields.RelationFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
