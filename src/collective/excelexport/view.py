@@ -47,7 +47,7 @@ class ExcelExport(BrowserView):
             for exportablenum, exportable in enumerate(sheetinfo['exportables']):
                 sheet.write(0, exportablenum,
                             exportable.render_header(),
-                            copy(styles.headers))
+                            styles.headers)
 
             for rownum, obj in enumerate(sheetinfo['objects']):
                 for exportablenum, exportable in enumerate(sheetinfo['exportables']):
@@ -55,10 +55,16 @@ class ExcelExport(BrowserView):
                                 exportable.render_value(obj),
                                 exportable.render_style(obj, copy(styles.content)))
 
+        if not sheetsinfo:
+            # empty doc
+            sheet = xlDoc.add_sheet('sheet 1')
+            sheet.write(0, 0,
+                        "",
+                        styles.content)
+
         doc = CompoundDoc.XlsDoc()
         data = xlDoc.get_biff_data()
         doc.save(string_buffer, data)
-
 
         self.request.response.setHeader(
             'Content-type', 'application/vnd.ms-excel;charset=windows-1252')

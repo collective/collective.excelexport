@@ -18,10 +18,24 @@ class BaseContentsDataSource(object):
     group them by portal type (one sheet by portal type)
     """
     implements(IDataSource)
+    portal_types = None
+    behaviors = None
+    excluded_factories = None
 
     def __init__(self, context, request):
         self.context = context
         self.request = request
+
+    def get_filename(self):
+        raise NotImplemented
+
+    def get_objects(self):
+        raise NotImplemented
+
+    def filter_exportables(self, exportables):
+        """You can filter exportables here
+        """
+        return exportables
 
     def get_sheets_data(self):
         """Gets a list of dictionaries with three keys :
@@ -43,9 +57,11 @@ class BaseContentsDataSource(object):
                                     IExportableFactory)
             filtered_factories = []
             for factory in factories:
-                factory = factory[1]
+                factory_name, factory = factory
                 if factory.portal_types and p_type not in factory.portal_types:
                     # filter on content types if it is set
+                    continue
+                if self.excluded_factories and factory_name in self.excluded_factories:
                     continue
 
                 if factory.behaviors:
@@ -67,6 +83,6 @@ class BaseContentsDataSource(object):
             title  = p_type_fti.Title()
             data.append({'title': title,
                          'objects': p_types_objects[p_type],
-                         'exportables': exportables})
+                         'exportables': self.filter_exportables(exportables)})
 
         return data

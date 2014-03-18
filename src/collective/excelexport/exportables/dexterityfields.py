@@ -1,5 +1,3 @@
-from io import StringIO
-
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory
@@ -10,28 +8,25 @@ from zope.component._api import getUtility
 from zope.i18n import translate
 from zope.interface.declarations import implements
 
+from z3c.form.interfaces import NO_VALUE
+
+from Products.CMFCore.utils import getToolByName
+from plone.app.textfield.interfaces import IRichText
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.behavior.interfaces import IBehavior
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
 
 from collective.excelexport.interfaces import IExportable
-from collective.excelexport.interfaces import IExportableFactory
-from plone.app.textfield.interfaces import IRichText
-from Products.CMFCore.utils import getToolByName
+from collective.excelexport.exportables.base import BaseExportableFactory
 
 
-class DexterityFieldsExportableFactory(object):
+class DexterityFieldsExportableFactory(BaseExportableFactory):
+    """Get fields content schema
+    """
     adapts(IDexterityFTI, Interface, Interface)
-    implements(IExportableFactory)
-
-    portal_types = None
-    behaviors = None
-
-    def __init__(self, fti, context, request):
-        self.fti = fti
-        self.context = context
-        self.request = request
 
     def get_exportables(self):
         schema = self.fti.lookupSchema()
@@ -39,6 +34,26 @@ class DexterityFieldsExportableFactory(object):
         exportables = [getMultiAdapter((field, self.context, self.request),
                                         interface=IExportable) for field in fields]
         return exportables
+
+
+class DexterityBehaviorsExportableFactory(BaseExportableFactory):
+    """Get fields from behaviors
+    """
+    adapts(IDexterityFTI, Interface, Interface)
+
+    def get_exportables(self):
+        fields = []
+        for behavior_id in self.fti.behaviors:
+            behavior = getUtility(IBehavior, behavior_id).interface
+            if not IFormFieldProvider.providedBy(behavior):
+                continue
+
+            fields.extend([f[1] for f in getFieldsInOrder(behavior)])
+
+        exportables = [getMultiAdapter((field, self.context, self.request),
+                                        interface=IExportable) for field in fields]
+        return exportables
+
 
 
 class IFieldValueGetter(Interface):
@@ -128,7 +143,15 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
                 vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
 
         if vocabulary:
-            return vocabulary.getTermByToken(value).title or value
+            try:
+                term = vocabulary.getTermByToken(value)
+            except LookupError:
+                term = None
+        else:
+            term = None
+
+        if term:
+            return term.title or value
         else:
             return value
 
@@ -163,8 +186,9 @@ class RichTextFieldRenderer(BaseFieldRenderer):
         """Gets the value to render in excel file from content value
         """
         value = self.get_value(obj)
-        if not value:
+        if not value or value == NO_VALUE:
             return ""
+
         ptransforms = getToolByName(obj, 'portal_transforms')
         text = ptransforms.convert('text_to_html', value.output).getData()
         if len(text) > 50:

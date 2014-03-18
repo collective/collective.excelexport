@@ -12,6 +12,10 @@
              provides="collective.excelexport.interfaces.IExportableFactory"
              name="fields" />
 
+    <adapter factory=".dexterityfields.DexterityBehaviorsExportableFactory"
+             provides="collective.excelexport.interfaces.IExportableFactory"
+             name="behaviors" />
+
     <adapter factory=".dexterityfields.DexterityValueGetter"
              provides=".dexterityfields.IFieldValueGetter" />
 
