@@ -1,11 +1,10 @@
-from zope.interface import implements, Interface
+from zope.interface import Interface
 from zope.component import adapts
 from datetime import datetime
 
 from plone import api
 from Products.CMFCore.interfaces import IFolderish
 
-from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.datasources.base import BaseContentsDataSource
 
 

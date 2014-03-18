@@ -21,6 +21,18 @@ from plone.schemaeditor.schema import IChoice
 
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.exportables.base import BaseExportableFactory
+from plone.supermodel.interfaces import FIELDSETS_KEY
+
+
+def non_fieldset_fields(schema):
+    fieldset_fields = []
+    fieldsets = schema.queryTaggedValue(FIELDSETS_KEY, [])
+
+    for fieldset in fieldsets:
+        fieldset_fields.extend(fieldset.fields)
+
+    fields = [info[0] for info in getFieldsInOrder(schema)]
+    return [f for f in fields if f not in fieldset_fields]
 
 
 class DexterityFieldsExportableFactory(BaseExportableFactory):
@@ -29,31 +41,43 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
     adapts(IDexterityFTI, Interface, Interface)
 
     def get_exportables(self):
+        # this code is much complicated because we have to get sure
+        # we get the fields in the order of the fieldsets
+        # the order of the fields in the fieldsets can differ
+        # of the getFieldsInOrder(schema) order...
+        # that's because fields from different schemas
+        # can take place in the same fieldset
         schema = self.fti.lookupSchema()
-        fields = [f[1] for f in getFieldsInOrder(schema)]
-        exportables = [getMultiAdapter((field, self.context, self.request),
-                                        interface=IExportable) for field in fields]
-        return exportables
+        fieldset_fields = {}
+        ordered_fieldsets = ['default']
+        for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
+            ordered_fieldsets.append(fieldset.__name__)
+            fieldset_fields[fieldset.__name__] = fieldset.fields
 
+        fieldset_fields['default'] = non_fieldset_fields(schema)
 
-class DexterityBehaviorsExportableFactory(BaseExportableFactory):
-    """Get fields from behaviors
-    """
-    adapts(IDexterityFTI, Interface, Interface)
-
-    def get_exportables(self):
-        fields = []
+        # Get the behavior fields
+        fields = getFieldsInOrder(schema)
         for behavior_id in self.fti.behaviors:
-            behavior = getUtility(IBehavior, behavior_id).interface
-            if not IFormFieldProvider.providedBy(behavior):
+            schema = getUtility(IBehavior, behavior_id).interface
+            if not IFormFieldProvider.providedBy(schema):
                 continue
 
-            fields.extend([f[1] for f in getFieldsInOrder(behavior)])
+            fields.extend(getFieldsInOrder(schema))
+            for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
+                fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
+                ordered_fieldsets.append(fieldset.__name__)
 
-        exportables = [getMultiAdapter((field, self.context, self.request),
+            fieldset_fields['default'].extend(non_fieldset_fields(schema))
+
+        ordered_fields = []
+        for fieldset in ordered_fieldsets:
+            ordered_fields.extend(fieldset_fields[fieldset])
+
+        fields.sort(key=lambda field: ordered_fields.index(field[0]))
+        exportables = [getMultiAdapter((field[1], self.context, self.request),
                                         interface=IExportable) for field in fields]
         return exportables
-
 
 
 class IFieldValueGetter(Interface):
@@ -82,6 +106,10 @@ class BaseFieldRenderer(object):
         self.field = field
         self.context = context
         self.request = request
+
+    def __repr__(self):
+        return "<%s - %s>" % (self.__class__.__name__,
+                                   self.field.__name__)
 
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
@@ -238,20 +266,3 @@ try:
 
 except:
     HAS_DATAGRIDFIELD = False
-
-
-try:
-    from collective.contact.widget.interfaces import IContactChoice
-    HAS_CONTACTS = True
-    class ContactFieldRenderer(BaseFieldRenderer):
-        adapts(IContactChoice, Interface, Interface)
-
-        def render_value(self, obj):
-            value = self.get_value(obj)
-            return self.render_collection_entry(obj, value)
-
-        def render_collection_entry(self, obj, value):
-            return value and value.to_object and value.to_object.get_full_title() or u""
-
-except:
-    HAS_CONTACTS = False

@@ -12,10 +12,6 @@
              provides="collective.excelexport.interfaces.IExportableFactory"
              name="fields" />
 
-    <adapter factory=".dexterityfields.DexterityBehaviorsExportableFactory"
-             provides="collective.excelexport.interfaces.IExportableFactory"
-             name="behaviors" />
-
     <adapter factory=".dexterityfields.DexterityValueGetter"
              provides=".dexterityfields.IFieldValueGetter" />
 
@@ -44,11 +40,6 @@
     <adapter zcml:condition="installed collective.z3cform.datagridfield"
              factory=".dexterityfields.DictRowFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
-
-    <adapter zcml:condition="installed collective.contact.core"
-             factory=".dexterityfields.ContactFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
 
   <genericsetup:registerProfile
       name="dexterity"

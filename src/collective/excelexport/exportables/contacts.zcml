@@ -8,10 +8,7 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-    <include file="dexterityfields.zcml"
-             zcml:condition="installed plone.app.dexterity" />
-
-    <include file="contacts.zcml"
-             zcml:condition="installed collective.contact.core" />
+    <adapter factory=".contacts.ContactFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
 
 </configure>
