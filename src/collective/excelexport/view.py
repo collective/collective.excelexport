@@ -36,12 +36,12 @@ class ExcelExport(BrowserView):
             styles = getMultiAdapter((self.context, self.request),
                                      interface=IStyles)
 
-        not_empty_doc = False
+        empty_doc = True
         for sheetnum, sheetinfo in enumerate(sheetsinfo):
             if len(sheetinfo['exportables']) == 0:
                 continue
 
-            not_empty_doc = True
+            empty_doc = False
             sheet_title = sheetinfo['title'].replace("'", " ").replace(':', '-').replace('/', '-')[:31]
 
             try:
@@ -60,7 +60,7 @@ class ExcelExport(BrowserView):
                                 exportable.render_value(obj),
                                 exportable.render_style(obj, copy(styles.content)))
 
-        if not_empty_doc:
+        if empty_doc:
             # empty doc
             sheet = xlDoc.add_sheet('sheet 1')
             sheet.write(0, 0,
