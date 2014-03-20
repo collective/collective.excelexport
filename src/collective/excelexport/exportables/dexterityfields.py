@@ -124,7 +124,11 @@ class BaseFieldRenderer(object):
         return translate(self.field.title, context=self.request)
 
     def render_value(self, obj):
-        return self.get_value(obj)
+        value = self.get_value(obj)
+        if value == NO_VALUE:
+            return None
+        else:
+            return value
 
     def render_collection_entry(self, obj, value):
         """Render a value element if the field is a sub field of a collection
@@ -185,7 +189,11 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             term = None
 
         if term:
-            return translate(term.title, context=self.request) or value
+            title = term.title
+            if not title:
+                return value
+            else:
+                return translate(title, context=self.request)
         else:
             return value
 
@@ -240,7 +248,7 @@ try:
             return self.render_collection_entry(obj, value)
 
         def render_collection_entry(self, obj, value):
-            return value and value.to_object.Title() or u""
+            return value and value.to_object and value.to_object.Title() or u""
 
 except:
     HAS_RELATIONFIELD = False
