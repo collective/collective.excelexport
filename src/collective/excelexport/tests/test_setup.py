@@ -69,4 +69,24 @@ class TestInstall(IntegrationTestCase):
         self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0, u'English\nFran\xe7ais', u'logoplone.png'])
         row2 = sheet.row_values(2)
         self.assertEqual(row2, [u'John Smith', 29791.0, '', 100.0, u'English\nEspa\xf1ol', ''])
-        #os.remove(generated_path)
+        os.remove(generated_path)
+
+    def test_searchpolicy_export(self):
+        import xlrd
+        self.portal.REQUEST.form['excelexport.policy'] = 'search'
+        self.portal.REQUEST.form['getId'] = "johndoe"
+        output = self.portal.unrestrictedTraverse('@@collective.excelexport')()
+        generated_path = tempfile.mktemp(suffix='test.xls')
+        generated_file = open(generated_path, 'w')
+        generated_file.write(output)
+        generated_file.close()
+        sheets = xlrd.open_workbook(generated_path)
+        self.assertEqual(sheets.sheet_names(), ['member'])
+        sheet = sheets.sheet_by_name(u'member')
+        headers_row = sheet.row_values(0)
+        self.assertEqual(headers_row, [u'Name', u'Birth date', u'subscription', u'amount', u'Languages', u'Photo'])
+        row1 = sheet.row_values(1)
+        self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0, u'English\nFran\xe7ais', u'logoplone.png'])
+        with self.assertRaises(IndexError):
+            sheet.row_values(2)
+        os.remove(generated_path)

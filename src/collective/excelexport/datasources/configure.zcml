@@ -13,6 +13,11 @@
              provides="collective.excelexport.interfaces.IDataSource"
               />
 
+    <adapter factory=".search.SearchContentsDataSource"
+             provides="collective.excelexport.interfaces.IDataSource"
+             name="search"
+              />
+
     <include package=".eeafaceted"
              zcml:condition="installed eea.facetednavigation" />
 
