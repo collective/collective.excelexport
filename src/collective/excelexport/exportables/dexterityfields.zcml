@@ -41,11 +41,4 @@
              factory=".dexterityfields.DictRowFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
-  <genericsetup:registerProfile
-      name="dexterity"
-      title="collective.excelexport dexterity contents"
-      directory="profiles/dexterity"
-      description="Steps to ease tests of collective.excelexport"
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      />
 </configure>

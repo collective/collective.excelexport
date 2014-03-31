@@ -44,7 +44,6 @@ class CollectiveExcelexportLayer(PloneSandboxLayer):
         setRoles(portal, TEST_USER_ID, ['Manager'])
         login(portal, TEST_USER_NAME)
         folder_id = portal.invokeFactory('Folder', 'folder')
-        portal.portal_languages.setDefaultLanguage('fr')
         portal[folder_id].reindexObject()
 
         # Commit so that the test browser sees these objects
