@@ -39,3 +39,12 @@ If you want to define new columns for your excel export, you will write or overr
 
   - Exportable factories, adapters for IExportableFactory interface that provides a list of Exportables
   - Exportables, that define columns.
+
+
+Tests
+=====
+
+This add-on is tested using Travis CI. The current status of the add-on is :
+
+.. image:: https://secure.travis-ci.org/tdesvenain/collective.excelexport.png
+    :target: http://travis-ci.org/tdesvenain/collective.excelexport
