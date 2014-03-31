@@ -122,7 +122,7 @@ class BaseFieldRenderer(object):
         return IFieldValueGetter(obj).get(self.field)
 
     def render_header(self):
-        return translate(self.field.title, context=self.request)
+        return self.field.title
 
     def render_value(self, obj):
         value = self.get_value(obj)
@@ -194,7 +194,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             if not title:
                 return value
             else:
-                return translate(title, context=self.request)
+                return title
         else:
             return value
 
@@ -205,7 +205,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         voc_value = self._get_vocabulary_value(obj, value)
-        return voc_value and translate(voc_value, context=self.request) or ""
+        return voc_value and translate(voc_value, context=self.request) or u""
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
@@ -218,8 +218,8 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         sub_renderer = getMultiAdapter((self.field.value_type,
                                         self.context, self.request),
                                         interface=IExportable)
-        return value and u"\n".join([str(sub_renderer.render_collection_entry(obj, v))
-                                     for v in value]) or ""
+        return value and u"\n".join([sub_renderer.render_collection_entry(obj, v)
+                                     for v in value]) or u""
 
 
 class RichTextFieldRenderer(BaseFieldRenderer):
@@ -235,7 +235,7 @@ class RichTextFieldRenderer(BaseFieldRenderer):
         ptransforms = getToolByName(obj, 'portal_transforms')
         text = ptransforms.convert('text_to_html', value.output).getData()
         if len(text) > 50:
-            return text[:47] + "..."
+            return text[:47] + u"..."
 
 
 try:
@@ -268,7 +268,7 @@ try:
                 sub_renderer = getMultiAdapter((field,
                                                 self.context, self.request),
                                                 interface=IExportable)
-                field_renderings.append("%s : %s" % (
+                field_renderings.append(u"%s : %s" % (
                                         sub_renderer.render_header(),
                                         sub_renderer.render_collection_entry(obj,
                                                 value.get(fieldname))))

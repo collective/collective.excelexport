@@ -6,6 +6,7 @@ from xlwt import CompoundDoc
 
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
+from zope.i18n import translate
 from Products.Five.browser import BrowserView
 
 from collective.excelexport.interfaces import IDataSource, IStyles
@@ -51,13 +52,13 @@ class ExcelExport(BrowserView):
 
             for exportablenum, exportable in enumerate(sheetinfo['exportables']):
                 sheet.write(0, exportablenum,
-                            exportable.render_header(),
+                            translate(exportable.render_header(), context=self.request),
                             styles.headers)
 
             for rownum, obj in enumerate(sheetinfo['objects']):
                 for exportablenum, exportable in enumerate(sheetinfo['exportables']):
                     sheet.write(rownum + 1, exportablenum,
-                                exportable.render_value(obj),
+                                translate(exportable.render_value(obj), context=self.request),
                                 exportable.render_style(obj, copy(styles.content)))
 
         if empty_doc:
