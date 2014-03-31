@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory
@@ -217,8 +218,8 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         sub_renderer = getMultiAdapter((self.field.value_type,
                                         self.context, self.request),
                                         interface=IExportable)
-        return value and "\n".join([str(sub_renderer.render_collection_entry(obj, v))
-                                    for v in value]) or ""
+        return value and u"\n".join([str(sub_renderer.render_collection_entry(obj, v))
+                                     for v in value]) or ""
 
 
 class RichTextFieldRenderer(BaseFieldRenderer):
@@ -272,7 +273,7 @@ try:
                                         sub_renderer.render_collection_entry(obj,
                                                 value.get(fieldname))))
 
-            return " / ".join([r for r in field_renderings])
+            return u" / ".join([r for r in field_renderings])
 
         def render_value(self, obj):
             value = self.get_value(obj)
