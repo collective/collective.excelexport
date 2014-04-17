@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
-    IVocabularyFactory
+    IVocabularyFactory, IBool
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
@@ -155,6 +155,14 @@ class FileFieldRenderer(BaseFieldRenderer):
         """
         value = self.get_value(obj)
         return value and value.filename or ""
+
+
+class BooleanFieldRenderer(BaseFieldRenderer):
+    adapts(IBool, Interface, Interface)
+
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        return value and 1 or 0
 
 
 class DateFieldRenderer(BaseFieldRenderer):

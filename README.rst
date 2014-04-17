@@ -10,6 +10,7 @@ This product provides tools to provide excel exports to Plone users.
 A framework, with default utilities to export the dexterity contents of a folder,
 the results of a catalog search,
 and the results of a eea faceted navigation search.
+Many field types are managed (text, list, file, boolean, datagrid...).
 
 Try @@collective.excelexport view on any folder containing dexterity elements.
 Try @@collective.excelexport?export.policy=search&review_state=published on site root.

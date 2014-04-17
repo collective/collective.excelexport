@@ -21,6 +21,9 @@
     <adapter factory=".dexterityfields.FileFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
+    <adapter factory=".dexterityfields.BooleanFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
     <adapter factory=".dexterityfields.CollectionFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
