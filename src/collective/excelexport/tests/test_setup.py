@@ -73,7 +73,7 @@ class TestInstall(IntegrationTestCase):
 
     def test_searchpolicy_export(self):
         import xlrd
-        self.portal.REQUEST.form['excelexport.policy'] = 'search'
+        self.portal.REQUEST.form['excelexport.policy'] = 'excelexport.search'
         self.portal.REQUEST.form['getId'] = "johndoe"
         output = self.portal.unrestrictedTraverse('@@collective.excelexport')()
         generated_path = tempfile.mktemp(suffix='test.xls')

@@ -13,7 +13,7 @@ and the results of a eea faceted navigation search.
 Many field types are managed (text, list, file, boolean, datagrid...).
 
 Try @@collective.excelexport view on any folder containing dexterity elements.
-Try @@collective.excelexport?export.policy=search&review_state=published on site root.
+Try @@collective.excelexport?export.policy=excelexport.search&review_state=published on site root.
 
 
 How to extend it
