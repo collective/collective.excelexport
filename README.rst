@@ -42,6 +42,41 @@ If you want to define new columns for your excel export, you will write or overr
   - Exportables, that define columns.
 
 
+Styles
+------
+
+If you don't feel good with default styles, you can register a specific one for: ::
+  - the export policy
+  - the context
+  - the layer
+
+You just have to register a new IStyle adapter, in a zcml: ::
+
+    <adapter for="zope.interface.Interface
+                  .interfaces.IThemeSpecific"
+             factory=".excelstyles.MyNeutralStyle"
+             provides="collective.excelexport.interfaces.IStyles"
+              />
+
+If you do not specify the name, the styles will be registered for all policies.
+
+and in python: ::
+
+
+	class MyNeutralStyle(Styles):
+
+	    content = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold off; '
+	                     'align: wrap off, vert centre, horiz left;'
+	                     'borders: top thin, bottom thin, left thin, right thin;'
+	                     'pattern: pattern solid, back_colour white, fore_colour white'
+	                     )
+
+	    headers = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on; '
+	                         'align: wrap off, vert centre, horiz left; '
+	                         'borders: top thin, bottom thin, left thin, right thin; '
+	                         'pattern: pattern solid, back_colour white, fore_colour white; '
+	                         )
+
 Tests
 =====
 
