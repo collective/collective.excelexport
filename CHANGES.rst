@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.1 (unreleased)
+1.1 (2014-06-19)
 ----------------
 
 - Rename search policy excelexport.search to avoid conflict with 'search' view.
