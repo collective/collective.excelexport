@@ -47,5 +47,5 @@ Tests
 
 This add-on is tested using Travis CI. The current status of the add-on is :
 
-.. image:: https://secure.travis-ci.org/tdesvenain/collective.excelexport.png
-    :target: http://travis-ci.org/tdesvenain/collective.excelexport
+.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
+    :target: http://travis-ci.org/collective/collective.excelexport
