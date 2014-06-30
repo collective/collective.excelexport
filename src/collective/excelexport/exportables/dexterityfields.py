@@ -5,7 +5,8 @@ from zope.schema.interfaces import IField, IDate, ICollection,\
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
-from zope.component._api import getUtility
+from zope.component import getUtility
+from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.interface.declarations import implements
 
@@ -74,6 +75,25 @@ def get_ordered_fields(fti):
     return fields
 
 
+def get_exportable(field, context, request):
+    """Get exportable from dexterity field, context and request
+    """
+    try:
+        # check if there is a specific adapter for the field name
+        exportable = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExportable,
+                            name=field.__name__)
+    except ComponentLookupError:
+        # get the generic adapter for the field
+        exportable = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExportable)
+
+    return exportable
+
+
+
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
@@ -82,8 +102,12 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
 
     def get_exportables(self):
         fields = get_ordered_fields(self.fti)
-        exportables = [getMultiAdapter((field[1], self.context, self.request),
-                                        interface=IExportable) for field in fields]
+        exportables = []
+        for field in fields:
+            exportables.append(get_exportable(field[1],
+                                              self.context,
+                                              self.request))
+
         return exportables
 
 
@@ -94,6 +118,7 @@ class IFieldValueGetter(Interface):
     def get(self, fieldname):
         """Get value from fieldname
         """
+
 
 class DexterityValueGetter(object):
     adapts(IDexterityContent)

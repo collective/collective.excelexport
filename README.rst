@@ -42,6 +42,18 @@ If you want to define new columns for your excel export, you will write or overr
   - Exportables, that define columns.
 
 
+Dexterity exportables
+---------------------
+
+You have a complete set of exportables for dexterity fields.
+Those are multi-adapters of field, context and request.
+
+You can override them declaring a more specific adapter.
+
+You can also declare a named adapter with the field name if you want a specific
+rendering for one field.
+
+
 Styles
 ------
 
