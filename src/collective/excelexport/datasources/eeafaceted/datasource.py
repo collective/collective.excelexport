@@ -21,6 +21,6 @@ class FacetedSearchDataSource(BaseContentsDataSource):
         params = copy(self.request.form)
         if 'excelexport.policy' in params:
             del params['excelexport.policy']
-        #@TODO: check this is not batched
+        # @TODO: check this is not batched
         brains = faceted_query_view.query(**params)
         return [b.getObject() for b in brains]

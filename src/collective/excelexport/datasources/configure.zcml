@@ -15,7 +15,7 @@
 
     <adapter factory=".search.SearchContentsDataSource"
              provides="collective.excelexport.interfaces.IDataSource"
-             name="search"
+             name="excelexport.search"
               />
 
     <include package=".eeafaceted"

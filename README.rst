@@ -10,9 +10,10 @@ This product provides tools to provide excel exports to Plone users.
 A framework, with default utilities to export the dexterity contents of a folder,
 the results of a catalog search,
 and the results of a eea faceted navigation search.
+Many field types are managed (text, list, file, boolean, datagrid...).
 
 Try @@collective.excelexport view on any folder containing dexterity elements.
-Try @@collective.excelexport?export.policy=search&review_state=published on site root.
+Try @@collective.excelexport?export.policy=excelexport.search&review_state=published on site root.
 
 
 How to extend it
@@ -39,3 +40,59 @@ If you want to define new columns for your excel export, you will write or overr
 
   - Exportable factories, adapters for IExportableFactory interface that provides a list of Exportables
   - Exportables, that define columns.
+
+
+Dexterity exportables
+---------------------
+
+You have a complete set of exportables for dexterity fields.
+Those are multi-adapters of field, context and request.
+
+You can override them declaring a more specific adapter.
+
+You can also declare a named adapter with the field name if you want a specific
+rendering for one field.
+
+
+Styles
+------
+
+If you don't feel good with default styles, you can register a specific one for: ::
+  - the export policy
+  - the context
+  - the layer
+
+You just have to register a new IStyle adapter, in a zcml: ::
+
+    <adapter for="zope.interface.Interface
+                  .interfaces.IThemeSpecific"
+             factory=".excelstyles.MyNeutralStyle"
+             provides="collective.excelexport.interfaces.IStyles"
+              />
+
+If you do not specify the name, the styles will be registered for all policies.
+
+and in python: ::
+
+
+	class MyNeutralStyle(Styles):
+
+	    content = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold off; '
+	                     'align: wrap off, vert centre, horiz left;'
+	                     'borders: top thin, bottom thin, left thin, right thin;'
+	                     'pattern: pattern solid, back_colour white, fore_colour white'
+	                     )
+
+	    headers = xlwt.easyxf('font: height 200, name Arial, colour_index black, bold on; '
+	                         'align: wrap off, vert centre, horiz left; '
+	                         'borders: top thin, bottom thin, left thin, right thin; '
+	                         'pattern: pattern solid, back_colour white, fore_colour white; '
+	                         )
+
+Tests
+=====
+
+This add-on is tested using Travis CI. The current status of the add-on is :
+
+.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
+    :target: http://travis-ci.org/collective/collective.excelexport

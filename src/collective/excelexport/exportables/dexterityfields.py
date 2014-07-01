@@ -1,11 +1,12 @@
 # -*- encoding: utf-8 -*-
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
-    IVocabularyFactory
+    IVocabularyFactory, IBool
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
-from zope.component._api import getUtility
+from zope.component import getUtility
+from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.interface.declarations import implements
 
@@ -74,6 +75,24 @@ def get_ordered_fields(fti):
     return fields
 
 
+def get_exportable(field, context, request):
+    """Get exportable from dexterity field, context and request
+    """
+    try:
+        # check if there is a specific adapter for the field name
+        exportable = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExportable,
+                            name=field.__name__)
+    except ComponentLookupError:
+        # get the generic adapter for the field
+        exportable = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExportable)
+
+    return exportable
+
+
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
@@ -82,8 +101,12 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
 
     def get_exportables(self):
         fields = get_ordered_fields(self.fti)
-        exportables = [getMultiAdapter((field[1], self.context, self.request),
-                                        interface=IExportable) for field in fields]
+        exportables = []
+        for field in fields:
+            exportables.append(get_exportable(field[1],
+                                              self.context,
+                                              self.request))
+
         return exportables
 
 
@@ -94,6 +117,7 @@ class IFieldValueGetter(Interface):
     def get(self, fieldname):
         """Get value from fieldname
         """
+
 
 class DexterityValueGetter(object):
     adapts(IDexterityContent)
@@ -122,7 +146,7 @@ class BaseFieldRenderer(object):
         return IFieldValueGetter(obj).get(self.field)
 
     def render_header(self):
-        return translate(self.field.title, context=self.request)
+        return self.field.title
 
     def render_value(self, obj):
         value = self.get_value(obj)
@@ -155,6 +179,14 @@ class FileFieldRenderer(BaseFieldRenderer):
         """
         value = self.get_value(obj)
         return value and value.filename or ""
+
+
+class BooleanFieldRenderer(BaseFieldRenderer):
+    adapts(IBool, Interface, Interface)
+
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        return value and 1 or 0
 
 
 class DateFieldRenderer(BaseFieldRenderer):
@@ -194,7 +226,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             if not title:
                 return value
             else:
-                return translate(title, context=self.request)
+                return title
         else:
             return value
 
@@ -205,7 +237,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         voc_value = self._get_vocabulary_value(obj, value)
-        return voc_value and translate(voc_value, context=self.request) or ""
+        return voc_value and translate(voc_value, context=self.request) or u""
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
@@ -218,8 +250,8 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         sub_renderer = getMultiAdapter((self.field.value_type,
                                         self.context, self.request),
                                         interface=IExportable)
-        return value and u"\n".join([str(sub_renderer.render_collection_entry(obj, v))
-                                     for v in value]) or ""
+        return value and u"\n".join([sub_renderer.render_collection_entry(obj, v)
+                                     for v in value]) or u""
 
 
 class RichTextFieldRenderer(BaseFieldRenderer):
@@ -235,12 +267,13 @@ class RichTextFieldRenderer(BaseFieldRenderer):
         ptransforms = getToolByName(obj, 'portal_transforms')
         text = ptransforms.convert('text_to_html', value.output).getData()
         if len(text) > 50:
-            return text[:47] + "..."
+            return text[:47] + u"..."
 
 
 try:
     from z3c.relationfield.interfaces import IRelation
     HAS_RELATIONFIELD = True
+
     class RelationFieldRenderer(BaseFieldRenderer):
         adapts(IRelation, Interface, Interface)
 
@@ -258,6 +291,7 @@ except:
 try:
     from collective.z3cform.datagridfield.interfaces import IRow
     HAS_DATAGRIDFIELD = True
+
     class DictRowFieldRenderer(BaseFieldRenderer):
         adapts(IRow, Interface, Interface)
 
@@ -268,7 +302,7 @@ try:
                 sub_renderer = getMultiAdapter((field,
                                                 self.context, self.request),
                                                 interface=IExportable)
-                field_renderings.append("%s : %s" % (
+                field_renderings.append(u"%s : %s" % (
                                         sub_renderer.render_header(),
                                         sub_renderer.render_collection_entry(obj,
                                                 value.get(fieldname))))
