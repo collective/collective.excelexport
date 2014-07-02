@@ -5,6 +5,9 @@ Changelog
 1.2 (unreleased)
 ----------------
 
+- Faceted nav export link ignores results per page criterion.
+  [thomasdesvenain]
+
 - We can define a dexterity adapter for just one field using field name as
   adapter name.
   [thomasdesvenain]
