@@ -50,6 +50,7 @@ setup(
             'ecreall.helpers.testing',
             'plone.app.testing',
             'plone.app.dexterity',
+            'plone.app.relationfield',
             'xlrd',
         ],
     },

@@ -3,5 +3,6 @@
   <version>1</version>
   <dependencies>
     <dependency>profile-collective.excelexport:default</dependency>
+    <dependency>profile-plone.app.relationfield:default</dependency>
   </dependencies>
 </metadata>

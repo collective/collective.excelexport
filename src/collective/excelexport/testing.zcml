@@ -5,7 +5,9 @@
 
   <include file="configure.zcml" />
 
+  <include package="plone.behavior" file="meta.zcml" />
   <include package="ecreall.helpers.testing" />
+  <include package="plone.app.relationfield" />
 
   <genericsetup:registerProfile
       name="testing"

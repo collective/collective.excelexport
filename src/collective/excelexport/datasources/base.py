@@ -18,8 +18,6 @@ class BaseContentsDataSource(object):
     group them by portal type (one sheet by portal type)
     """
     implements(IDataSource)
-    portal_types = None
-    behaviors = None
     excluded_factories = None
 
     def __init__(self, context, request):
@@ -41,8 +39,7 @@ class BaseContentsDataSource(object):
         factories = getAdapters((p_type_fti, self.context, self.request),
                                 IExportableFactory)
         filtered_factories = []
-        for factory in sorted(factories, key=lambda f: f[1].weight):
-            factory_name, factory = factory
+        for factory_name, factory in sorted(factories, key=lambda f: f[1].weight):
             if factory.portal_types and p_type_fti.id not in factory.portal_types:
                 # filter on content types if it is set
                 continue
@@ -50,7 +47,7 @@ class BaseContentsDataSource(object):
                 # exclude factory if there is a factory filter
                 continue
             elif factory.behaviors:
-                # filter on behaviors if it is set
+                # filter on behaviors if factory is restricted to a behavior
                 for behavior_id in p_type_fti.behaviors:
                     behavior = getUtility(IBehavior, behavior_id).interface
                     if behavior in factory.behaviors:
@@ -66,7 +63,7 @@ class BaseContentsDataSource(object):
         """Gets a list of dictionaries with three keys :
             title: the title of the sheet
             objects: the list of objects
-            fields: the names of the fields to render
+            exportables: the exportables to render
         """
         objects = self.get_objects()
         p_types_objects = {}

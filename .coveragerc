@@ -1,5 +1,5 @@
 [report]
 include =
-    src/collective/*
+    src/collective/excelexport/*
 omit =
     */test*
