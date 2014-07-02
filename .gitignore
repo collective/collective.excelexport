@@ -13,3 +13,5 @@ parts/
 src/*
 !src/collective
 var/
+.coverage
+htmlcov/

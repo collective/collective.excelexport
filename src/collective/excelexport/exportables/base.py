@@ -1,6 +1,7 @@
 from zope.interface import implements
 from collective.excelexport.interfaces import IExportableFactory
 
+
 class BaseExportableFactory(object):
     implements(IExportableFactory)
 

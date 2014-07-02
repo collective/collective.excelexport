@@ -11,6 +11,7 @@ import tempfile
 
 TEST_IMAGE = os.path.join(os.path.dirname(__file__), 'logoplone.png')
 
+
 class TestInstall(IntegrationTestCase):
     """Test installation of collective.excelexport into Plone."""
 
@@ -23,7 +24,7 @@ class TestInstall(IntegrationTestCase):
         container = api.content.create(self.portal, type='Folder', id='container')
         self.content1 = api.content.create(container, type='member', id='johndoe',
                                            name="John Doe",
-                                           birth_date=datetime.date(1980,07,24),
+                                           birth_date=datetime.date(1980, 07, 24),
                                            amount=100,
                                            subscription='silver',
                                            languages=('en', 'fr'),
@@ -32,7 +33,7 @@ class TestInstall(IntegrationTestCase):
                                                   filename=u'logoplone.png'))
         self.content2 = api.content.create(container, type='member', id='johnsmith',
                                           name="John Smith",
-                                          birth_date=datetime.date(1981,07,24),
+                                          birth_date=datetime.date(1981, 07, 24),
                                           amount=100,
                                           languages=('en', 'es'),
                                           photo=None)
@@ -89,4 +90,5 @@ class TestInstall(IntegrationTestCase):
         self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0, u'English\nFran\xe7ais', u'logoplone.png'])
         with self.assertRaises(IndexError):
             sheet.row_values(2)
+
         os.remove(generated_path)

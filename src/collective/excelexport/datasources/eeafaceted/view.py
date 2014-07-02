@@ -2,6 +2,7 @@ from copy import copy
 import urllib
 from eea.facetednavigation.criteria.interfaces import ICriteria
 
+
 class ExportUrl(object):
 
     def export_url(self):

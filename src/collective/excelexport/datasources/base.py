@@ -37,6 +37,31 @@ class BaseContentsDataSource(object):
         """
         return exportables
 
+    def get_factories(self, p_type_fti):
+        factories = getAdapters((p_type_fti, self.context, self.request),
+                                IExportableFactory)
+        filtered_factories = []
+        for factory in sorted(factories, key=lambda f: f[1].weight):
+            factory_name, factory = factory
+            if factory.portal_types and p_type_fti.id not in factory.portal_types:
+                # filter on content types if it is set
+                continue
+            elif self.excluded_factories and factory_name in self.excluded_factories:
+                # exclude factory if there is a factory filter
+                continue
+            elif factory.behaviors:
+                # filter on behaviors if it is set
+                for behavior_id in p_type_fti.behaviors:
+                    behavior = getUtility(IBehavior, behavior_id).interface
+                    if behavior in factory.behaviors:
+                        break
+                else:
+                    continue
+
+            filtered_factories.append(factory)
+
+        return filtered_factories
+
     def get_sheets_data(self):
         """Gets a list of dictionaries with three keys :
             title: the title of the sheet
@@ -53,36 +78,17 @@ class BaseContentsDataSource(object):
         for p_type in sorted(p_types_objects.keys()):
             # get exportables for each content type
             p_type_fti = ttool[p_type]
-            factories = getAdapters((p_type_fti, self.context, self.request),
-                                    IExportableFactory)
-            filtered_factories = []
-            for factory in sorted(factories, key=lambda f:f[1].weight):
-                factory_name, factory = factory
-                if factory.portal_types and p_type not in factory.portal_types:
-                    # filter on content types if it is set
-                    continue
-                if self.excluded_factories and factory_name in self.excluded_factories:
-                    continue
-
-                if factory.behaviors:
-                    # filter on behaviors if it is set
-                    for behavior_id in p_type_fti.behaviors:
-                        behavior = getUtility(IBehavior, behavior_id).interface
-                        if behavior in factory.behaviors:
-                            break
-                    else:
-                        continue
-
-                filtered_factories.append(factory)
+            factories = self.get_factories(p_type_fti)
 
             # get the list of exportables from factories
             exportables = []
-            for factory in filtered_factories:
+            for factory in factories:
                 exportables.extend(factory.get_exportables())
 
-            title  = p_type_fti.Title()
+            title = p_type_fti.Title()
             data.append({'title': title,
                          'objects': p_types_objects[p_type],
-                         'exportables': self.filter_exportables(exportables)})
+                         'exportables': self.filter_exportables(exportables)
+                        })
 
         return data

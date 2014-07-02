@@ -93,7 +93,6 @@ def get_exportable(field, context, request):
     return exportable
 
 
-
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
@@ -274,6 +273,7 @@ class RichTextFieldRenderer(BaseFieldRenderer):
 try:
     from z3c.relationfield.interfaces import IRelation
     HAS_RELATIONFIELD = True
+
     class RelationFieldRenderer(BaseFieldRenderer):
         adapts(IRelation, Interface, Interface)
 
@@ -291,6 +291,7 @@ except:
 try:
     from collective.z3cform.datagridfield.interfaces import IRow
     HAS_DATAGRIDFIELD = True
+
     class DictRowFieldRenderer(BaseFieldRenderer):
         adapts(IRow, Interface, Interface)
 
