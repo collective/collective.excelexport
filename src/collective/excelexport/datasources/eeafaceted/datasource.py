@@ -23,4 +23,4 @@ class FacetedSearchDataSource(BaseContentsDataSource):
             del params['excelexport.policy']
 
         brains = faceted_query_view.query(**params)
-        return [b.getObject() for b in brains]
+        return [b.getObject() for b in brains._sequence]
