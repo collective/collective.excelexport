@@ -270,6 +270,7 @@ class RichTextFieldRenderer(BaseFieldRenderer):
         text = safe_unicode(ptransforms.convert('text_to_html', value.output).getData())
         if len(text) > 50:
             return text[:47] + u"..."
+        return text
 
 
 try:
