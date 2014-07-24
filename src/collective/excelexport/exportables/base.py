@@ -1,18 +1,16 @@
 from zope.interface import implements
-from collective.excelexport.interfaces import IExportableFactory
+from collective.excelexport.interfaces import IFieldsFactory
 
 
-class BaseExportableFactory(object):
-    implements(IExportableFactory)
+class BaseFieldsFactory(object):
+    implements(IFieldsFactory)
 
     portal_types = None
     behaviors = None
     weight = 1000
 
-    def __init__(self, fti, context, request):
+    def __init__(self, fti):
         self.fti = fti
-        self.context = context
-        self.request = request
 
-    def get_exportables(self):
+    def get_fields(self):
         raise NotImplemented

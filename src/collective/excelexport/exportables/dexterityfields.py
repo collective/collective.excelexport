@@ -8,6 +8,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
+from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
 
 from z3c.form.interfaces import NO_VALUE
@@ -21,8 +22,8 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
 
-from collective.excelexport.interfaces import IExportable
-from collective.excelexport.exportables.base import BaseExportableFactory
+from collective.excelexport.interfaces import IExcelRenderer
+from collective.excelexport.exportables.base import BaseFieldsFactory
 from plone.supermodel.interfaces import FIELDSETS_KEY
 
 from Products.CMFPlone.utils import safe_unicode
@@ -77,39 +78,15 @@ def get_ordered_fields(fti):
     return fields
 
 
-def get_exportable(field, context, request):
-    """Get exportable from dexterity field, context and request
-    """
-    try:
-        # check if there is a specific adapter for the field name
-        exportable = getMultiAdapter(
-                            (field, context, request),
-                            interface=IExportable,
-                            name=field.__name__)
-    except ComponentLookupError:
-        # get the generic adapter for the field
-        exportable = getMultiAdapter(
-                            (field, context, request),
-                            interface=IExportable)
-
-    return exportable
-
-
-class DexterityFieldsExportableFactory(BaseExportableFactory):
+class DexterityFieldsFactory(BaseFieldsFactory):
     """Get fields content schema
     """
-    adapts(IDexterityFTI, Interface, Interface)
+    adapts(IDexterityFTI)
     weight = 100
 
-    def get_exportables(self):
-        fields = get_ordered_fields(self.fti)
-        exportables = []
-        for field in fields:
-            exportables.append(get_exportable(field[1],
-                                              self.context,
-                                              self.request))
+    def get_fields(self):
+        return [field[1] for field in get_ordered_fields(self.fti)]
 
-        return exportables
 
 
 class IFieldValueGetter(Interface):
@@ -132,8 +109,29 @@ class DexterityValueGetter(object):
         return getattr(self.context, field.__name__, None)
 
 
+class FieldWrapper(object):
+
+    def __init__(self, field):
+        self.field = field
+
+    def __getattr__(self, name):
+        return getattr(self.field, name)
+
+
+class ParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__)
+
+
+class GrandParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__.__parent__)
+
+
 class BaseFieldRenderer(object):
-    implements(IExportable)
+    implements(IExcelRenderer)
 
     def __init__(self, field, context, request):
         self.field = field
@@ -141,21 +139,29 @@ class BaseFieldRenderer(object):
         self.request = request
 
     def __repr__(self):
-        return "<%s - %s>" % (self.__class__.__name__,
-                                   self.field.__name__)
-
-    def get_value(self, obj):
-        return IFieldValueGetter(obj).get(self.field)
+        return "<%s - %s>" % (self.__class__.__name__, self.field.__name__)
 
     def render_header(self):
-        return self.field.title
+        return self.translate(self.field.title)
 
-    def render_value(self, obj):
-        value = self.get_value(obj)
+    def translate(self, value):
+        if isinstance(value, Message):
+            return translate(value, context=self.request)
+        return value
+
+    def get_field_value(self):
+        field = self.field
+        return field.query(field.context)
+
+    def _render_value(self):
+        value = self.get_field_value()
         if value == NO_VALUE:
             return None
         else:
             return value
+
+    def render_value(self):
+        return self.translate(self._render_value())
 
     def render_collection_entry(self, obj, value):
         """Render a value element if the field is a sub field of a collection
@@ -176,18 +182,18 @@ class FieldRenderer(BaseFieldRenderer):
 class FileFieldRenderer(BaseFieldRenderer):
     adapts(INamedField, Interface, Interface)
 
-    def render_value(self, obj):
+    def _render_value(self):
         """Gets the value to render in excel file from content value
         """
-        value = self.get_value(obj)
+        value = self.get_field_value()
         return value and value.filename or ""
 
 
 class BooleanFieldRenderer(BaseFieldRenderer):
     adapts(IBool, Interface, Interface)
 
-    def render_value(self, obj):
-        value = self.get_value(obj)
+    def _render_value(self):
+        value = self.get_field_value()
         return value and 1 or 0
 
 
@@ -232,9 +238,9 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
         else:
             return value
 
-    def render_value(self, obj):
-        value = self.get_value(obj)
-        voc_value = self._get_vocabulary_value(obj, value)
+    def _render_value(self):
+        value = self.get_field_value()
+        voc_value = self._get_vocabulary_value(self.field.context, value)
         return voc_value
 
     def render_collection_entry(self, obj, value):
@@ -245,28 +251,24 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 class CollectionFieldRenderer(BaseFieldRenderer):
     adapts(ICollection, Interface, Interface)
 
-    def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
-        value = self.get_value(obj)
+    def _render_value(self):
+        value = self.get_field_value()
         sub_renderer = getMultiAdapter((self.field.value_type,
                                         self.context, self.request),
-                                        interface=IExportable)
-        return value and u"\n".join([sub_renderer.render_collection_entry(obj, v)
+                                        interface=IExcelRenderer)
+        return value and u"\n".join([sub_renderer.render_collection_entry(self.field.context, v)
                                      for v in value]) or u""
 
 
 class RichTextFieldRenderer(BaseFieldRenderer):
     adapts(IRichText, Interface, Interface)
 
-    def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
-        value = self.get_value(obj)
+    def _render_value(self):
+        value = self.get_field_value()
         if not value or value == NO_VALUE:
             return ""
 
-        ptransforms = getToolByName(obj, 'portal_transforms')
+        ptransforms = getToolByName(self.context, 'portal_transforms')
         text = safe_unicode(ptransforms.convert('text_to_html', value.output).getData())
         if len(text) > 50:
             return text[:47] + u"..."
@@ -280,9 +282,9 @@ try:
     class RelationFieldRenderer(BaseFieldRenderer):
         adapts(IRelation, Interface, Interface)
 
-        def render_value(self, obj):
-            value = self.get_value(obj)
-            return self.render_collection_entry(obj, value)
+        def _render_value(self):
+            value = self.get_field_value()
+            return self.render_collection_entry(self.field.context, value)
 
         def render_collection_entry(self, obj, value):
             return value and value.to_object and value.to_object.Title() or u""
@@ -304,7 +306,7 @@ try:
             for fieldname, field in fields:
                 sub_renderer = getMultiAdapter((field,
                                                 self.context, self.request),
-                                                interface=IExportable)
+                                                interface=IExcelRenderer)
                 field_renderings.append(u"%s : %s" % (
                                         sub_renderer.render_header(),
                                         sub_renderer.render_collection_entry(obj,
@@ -312,9 +314,9 @@ try:
 
             return u" / ".join([r for r in field_renderings])
 
-        def render_value(self, obj):
-            value = self.get_value(obj)
-            return self.render_collection_entry(obj, value)
+        def _render_value(self):
+            value = self.get_field_value()
+            return self.render_collection_entry(self.field.context, value)
 
 except:
     HAS_DATAGRIDFIELD = False

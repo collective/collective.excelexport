@@ -22,7 +22,7 @@ class IDataSource(Interface):
         """Gets a list of dictionaries with three keys :
             title: the title of the sheet
             objects: the list of objects
-            exportables: the names of the exportables to render
+            fields: the fields to render
         """
 
 
@@ -35,21 +35,21 @@ class IStyles(Interface):
     content = Attribute("""xlwt Style object for contents""")
 
 
-class IExportableFactory(Interface):
-    """Adapter to get exportables (ex: fields, history, etc)
-    we can have many exportable factories for a fti
-    we can restrict an exportable factory on few portal types or behaviors
+class IFieldsFactory(Interface):
+    """Adapter to get fields
+    we can have many fields factories for a fti
+    we can restrict a field factory to few portal types or behaviors
     """
     portal_types = Attribute("""list: portal_types on wich this factory applies""")
     behaviors = Attribute("""list of interfaces: if set, the factory applies on types implementing one of those behaviors""")
     weight = Attribute("""Weight for order (the lower, the first)""")
 
-    def get_exportables(self):
-        """List of exportables for the content type
+    def get_fields(self):
+        """List of fields for the content type
         """
 
 
-class IExportable(Interface):
+class IExcelRenderer(Interface):
     """Render a value and a style from something, for example a field
     """
 

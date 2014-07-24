@@ -6,11 +6,25 @@ from xlwt import CompoundDoc
 
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
-from zope.i18n import translate
-from zope.i18nmessageid.message import Message
 from Products.Five.browser import BrowserView
 
 from collective.excelexport.interfaces import IDataSource, IStyles
+from collective.excelexport.interfaces import IExcelRenderer
+
+
+def get_renderer(field, context, request):
+    try:
+        # check if there is a specific adapter for the field name
+        renderer = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExcelRenderer,
+                            name=field.__name__)
+    except ComponentLookupError:
+        # get the generic adapter for the field
+        renderer = getMultiAdapter(
+                            (field, context, request),
+                            interface=IExcelRenderer)
+    return renderer
 
 
 class ExcelExport(BrowserView):
@@ -29,27 +43,25 @@ class ExcelExport(BrowserView):
             )
 
     def write_sheet(self, sheet, sheetinfo, styles):
-        # headers
-        for exportablenum, exportable in enumerate(sheetinfo['exportables']):
-            render = exportable.render_header()
-            if isinstance(render, Message):
-                render = translate(render, context=self.request)
-            sheet.write(0, exportablenum, render, styles.headers)
-
-        # values
-        for rownum, obj in enumerate(sheetinfo['objects']):
-            for exportablenum, exportable in enumerate(sheetinfo['exportables']):
-                render = exportable.render_value(obj)
-                if isinstance(render, Message):
-                    render = translate(render, context=self.request)
-                sheet.write(rownum + 1, exportablenum, render,
-                            exportable.render_style(obj, copy(styles.content)))
+        for fieldnum, field in enumerate(sheetinfo['fields']):
+            # values
+            for rownum, obj in enumerate(sheetinfo['objects']):
+                # header
+                if rownum == 0:
+                    renderer = get_renderer(field, obj, self.request)
+                    rendered = renderer.render_header()
+                    sheet.write(0, fieldnum, rendered, styles.headers)
+                bound_field = field.bind(obj)
+                renderer = get_renderer(bound_field, obj, self.request)
+                rendered = renderer.render_value()
+                style = renderer.render_style(obj, copy(styles.content))
+                sheet.write(rownum + 1, fieldnum, rendered, style)
 
     def get_xldoc(self, sheetsinfo, styles):
         xldoc = xlwt.Workbook(encoding='utf-8')
         empty_doc = True
         for sheetnum, sheetinfo in enumerate(sheetsinfo):
-            if len(sheetinfo['exportables']) == 0:
+            if len(sheetinfo['fields']) == 0:
                 continue
 
             # sheet
