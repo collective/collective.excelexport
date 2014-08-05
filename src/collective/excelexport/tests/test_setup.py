@@ -77,9 +77,9 @@ class TestInstall(IntegrationTestCase):
         headers_row = sheet.row_values(0)
         self.assertEqual(headers_row, [u'Name', u'Birth date', u'subscription', u'amount', u'Languages', u'Photo', u'Related Items'])
         row1 = sheet.row_values(1)
-        self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0, u'English\nFrench', u'logoplone.png', ''])
+        self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0, u'English\nFran\xe7ais', u'logoplone.png', ''])
         row2 = sheet.row_values(2)
-        self.assertEqual(row2, [u'John Smith', 29791.0, '', 100.0, u'English\nSpanish', '', 'John Doe'])
+        self.assertEqual(row2, [u'John Smith', 29791.0, '', 100.0, u'English\nEspa\xf1ol', '', 'John Doe'])
         os.remove(generated_path)
 
     def test_searchpolicy_export(self):
@@ -100,7 +100,7 @@ class TestInstall(IntegrationTestCase):
                                        u'Related Items'])
         row1 = sheet.row_values(1)
         self.assertEqual(row1, [u'John Doe', 29426.0, 'silver', 100.0,
-                                u'English\nFrench',
+                                u'English\nFran\xe7ais',
                                 u'logoplone.png', ''])
         with self.assertRaises(IndexError):
             sheet.row_values(2)
