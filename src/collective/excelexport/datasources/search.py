@@ -11,7 +11,7 @@ from collective.excelexport.datasources.base import BaseContentsDataSource
 
 
 class SearchContentsDataSource(BaseContentsDataSource):
-    """Export the contents of a folder
+    """Export the contents of a catalog search
     """
     adapts(IPloneSiteRoot, Interface)
 
