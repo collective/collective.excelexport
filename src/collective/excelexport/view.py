@@ -48,7 +48,7 @@ class ExcelExport(BrowserView):
             for rownum, obj in enumerate(sheetinfo['objects']):
                 bound_field = field.bind(obj)
                 renderer = get_renderer(bound_field, obj, self.request)
-                style = renderer.render_style(obj, copy(styles.content))
+                style = renderer.render_style(obj, copy(styles))
                 # header
                 if rownum == 0:
                     rendered = renderer.render_header()
