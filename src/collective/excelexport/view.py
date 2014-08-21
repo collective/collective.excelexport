@@ -46,16 +46,15 @@ class ExcelExport(BrowserView):
         for fieldnum, field in enumerate(sheetinfo['fields']):
             # values
             for rownum, obj in enumerate(sheetinfo['objects']):
-                # header
-                if rownum == 0:
-                    renderer = get_renderer(field, obj, self.request)
-                    rendered = renderer.render_header()
-                    sheet.write(0, fieldnum, rendered, styles.headers)
                 bound_field = field.bind(obj)
                 renderer = get_renderer(bound_field, obj, self.request)
-                rendered = renderer.render_value()
                 style = renderer.render_style(obj, copy(styles.content))
-                sheet.write(rownum + 1, fieldnum, rendered, style)
+                # header
+                if rownum == 0:
+                    rendered = renderer.render_header()
+                    sheet.write(0, fieldnum, rendered, style.headers)
+                rendered = renderer.render_value()
+                sheet.write(rownum + 1, fieldnum, rendered, style.content)
 
     def get_xldoc(self, sheetsinfo, styles):
         xldoc = xlwt.Workbook(encoding='utf-8')
