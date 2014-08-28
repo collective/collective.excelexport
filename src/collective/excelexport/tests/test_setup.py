@@ -109,7 +109,6 @@ class TestInstall(IntegrationTestCase):
 
     def test_filter_factories(self):
 
-
         source = FolderContentsDataSource(self.portal.container,
                                         self.portal.REQUEST)
         data = source.get_sheets_data()
@@ -128,3 +127,15 @@ class TestInstall(IntegrationTestCase):
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 6)
 
+        class TestContentsDataSource(FolderContentsDataSource):
+
+            excluded_exportables = [
+                'birth_date',
+                'amount',
+                'photo',
+            ]
+
+        source = TestContentsDataSource(self.portal.container,
+                                        self.portal.REQUEST)
+        data = source.get_sheets_data()
+        self.assertEqual(len(data[0]['exportables']), 4)
