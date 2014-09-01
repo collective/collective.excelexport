@@ -47,6 +47,7 @@ setup(
     ],
     extras_require={
         'test': [
+            'collective.z3cform.datagridfield',
             'ecreall.helpers.testing',
             'plone.app.testing',
             'plone.app.dexterity',

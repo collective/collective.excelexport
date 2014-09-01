@@ -15,7 +15,7 @@ class IDataSource(Interface):
     """
 
     def get_filename(self):
-        """Gets the file name of the exported excel
+        """Gets the file name (without extension) of the exported excel
         """
 
     def get_sheets_data(self):

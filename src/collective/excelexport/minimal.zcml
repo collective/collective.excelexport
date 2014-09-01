@@ -36,6 +36,12 @@
              permission="zope2.View"
              />
 
+    <browser:page name="collective.excelexportcsv"
+             for="*"
+             class=".view.CSVExport"
+             permission="zope2.View"
+             />
+
     <adapter factory=".styles.Styles"
              provides=".interfaces.IStyles"
               />

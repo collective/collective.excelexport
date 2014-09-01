@@ -14,7 +14,7 @@ class FolderContentsDataSource(BaseContentsDataSource):
     adapts(IFolderish, Interface)
 
     def get_filename(self):
-        return "%s-%s.xls" % (
+        return "%s-%s" % (
                 datetime.now().strftime("%d-%m-%Y"), self.context.getId())
 
     def get_objects(self):

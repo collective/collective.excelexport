@@ -26,6 +26,8 @@ class BaseContentsDataSource(object):
         self.request = request
 
     def get_filename(self):
+        """Gets the file name (without extension) of the exported excel
+        """
         raise NotImplemented
 
     def get_objects(self):

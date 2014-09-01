@@ -16,7 +16,7 @@ class SearchContentsDataSource(BaseContentsDataSource):
     adapts(IPloneSiteRoot, Interface)
 
     def get_filename(self):
-        return "%s.xls" % (
+        return "%s" % (
                 datetime.now().strftime("%d-%m-%Y"))
 
     def get_objects(self):

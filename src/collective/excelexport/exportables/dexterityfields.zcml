@@ -33,6 +33,9 @@
     <adapter factory=".dexterityfields.ChoiceFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
+    <adapter factory=".dexterityfields.TextFieldRenderer"
+             provides="collective.excelexport.interfaces.IExportable" />
+
     <adapter factory=".dexterityfields.RichTextFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 

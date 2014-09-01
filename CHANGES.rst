@@ -5,16 +5,24 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Filter exportables by field name by default using excluded_exportables list.
-  [cedricmessiant]
-
-- Faceted nav export link ignores results per page criterion.
+- Feature: Added export under csv format.
   [thomasdesvenain]
 
-- We can define a dexterity adapter for just one field using field name as
+- API: Filter exportables by field name by default using excluded_exportables list.
+  [cedricmessiant]
+
+- API: We can define a dexterity adapter for just one field using field name as
   adapter name.
   [thomasdesvenain]
 
+- Fix: Faceted nav export link ignores results per page criterion.
+  [thomasdesvenain]
+
+- Fix: Translate sheet title.
+  [thomasdesvenain]
+
+- Fix: Improve text fields support.
+  [fngaha, thomasdesvenain]
 
 1.1 (2014-06-19)
 ----------------

@@ -30,6 +30,10 @@
         &lt;description/&gt;
         &lt;title&gt;Name&lt;/title&gt;
       &lt;/field&gt;
+      &lt;field name="biography" type="zope.schema.Text"&gt;
+        &lt;description/&gt;
+        &lt;title&gt;Biography&lt;/title&gt;
+      &lt;/field&gt;
       &lt;field name="birth_date" type="zope.schema.Date"&gt;
         &lt;description/&gt;
         &lt;required&gt;False&lt;/required&gt;

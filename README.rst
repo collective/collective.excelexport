@@ -5,7 +5,8 @@ collective.excelexport
 What does this product
 ======================
 
-This product provides tools to provide excel exports to Plone users.
+This product provides tools to provide excel exports to Plone users,
+under xls or csv format.
 
 A framework, with default utilities to export the dexterity contents of a folder,
 the results of a catalog search,
@@ -14,6 +15,8 @@ Many field types are managed (text, list, file, boolean, datagrid...).
 
 Try @@collective.excelexport view on any folder containing dexterity elements.
 Try @@collective.excelexport?excelexport.policy=excelexport.search&review_state=published on site root.
+
+Try @@collective.excelexportcsv view on any folder for csv export.
 
 
 How to extend it

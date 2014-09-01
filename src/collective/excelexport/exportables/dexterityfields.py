@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
-    IVocabularyFactory, IBool
+    IVocabularyFactory, IBool, IText
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
@@ -12,7 +12,6 @@ from zope.interface.declarations import implements
 
 from z3c.form.interfaces import NO_VALUE
 
-from Products.CMFCore.utils import getToolByName
 from plone.app.textfield.interfaces import IRichText
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.behavior.interfaces import IBehavior
@@ -20,6 +19,7 @@ from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
+from plone import api
 
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.exportables.base import BaseExportableFactory
@@ -180,7 +180,7 @@ class FileFieldRenderer(BaseFieldRenderer):
         """Gets the value to render in excel file from content value
         """
         value = self.get_value(obj)
-        return value and value.filename or ""
+        return value and value.filename or u""
 
 
 class BooleanFieldRenderer(BaseFieldRenderer):
@@ -256,8 +256,11 @@ class CollectionFieldRenderer(BaseFieldRenderer):
                                      for v in value]) or u""
 
 
-class RichTextFieldRenderer(BaseFieldRenderer):
-    adapts(IRichText, Interface, Interface)
+class TextFieldRenderer(BaseFieldRenderer):
+    adapts(IText, Interface, Interface)
+
+    def _get_text(self, value):
+        return value
 
     def render_value(self, obj):
         """Gets the value to render in excel file from content value
@@ -266,11 +269,19 @@ class RichTextFieldRenderer(BaseFieldRenderer):
         if not value or value == NO_VALUE:
             return ""
 
-        ptransforms = getToolByName(obj, 'portal_transforms')
-        text = safe_unicode(ptransforms.convert('text_to_html', value.output).getData())
+        text = safe_unicode(self._get_text(value))
         if len(text) > 50:
             return text[:47] + u"..."
+
         return text
+
+
+class RichTextFieldRenderer(TextFieldRenderer):
+    adapts(IRichText, Interface, Interface)
+
+    def _get_text(self, value):
+        ptransforms = api.portal.get_tool('portal_transforms')
+        return ptransforms.convert('html_to_text', value.output).getData().strip()
 
 
 try:

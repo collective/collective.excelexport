@@ -4,5 +4,6 @@
   <dependencies>
     <dependency>profile-collective.excelexport:default</dependency>
     <dependency>profile-plone.app.relationfield:default</dependency>
+    <dependency>profile-collective.z3cform.datagridfield:default</dependency>
   </dependencies>
 </metadata>
