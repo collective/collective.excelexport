@@ -125,3 +125,16 @@ class TestInstall(IntegrationTestCase):
                                         self.portal.REQUEST)
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 6)
+
+        class TestContentsDataSource(FolderContentsDataSource):
+
+            excluded_exportables = [
+                'birth_date',
+                'amount',
+                'photo',
+            ]
+
+        source = TestContentsDataSource(self.portal.container,
+                                        self.portal.REQUEST)
+        data = source.get_sheets_data()
+        self.assertEqual(len(data[0]['exportables']), 4)

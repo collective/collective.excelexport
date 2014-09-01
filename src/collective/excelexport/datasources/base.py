@@ -19,6 +19,7 @@ class BaseContentsDataSource(object):
     """
     implements(IDataSource)
     excluded_factories = None
+    excluded_exportables = None
 
     def __init__(self, context, request):
         self.context = context
@@ -31,9 +32,23 @@ class BaseContentsDataSource(object):
         raise NotImplemented
 
     def filter_exportables(self, exportables):
-        """You can filter exportables here
+        """Filter exportables whose field name is not in excluded_exportables
+
+        Override this method if you want to implement specific filtering
         """
-        return exportables
+        if self.excluded_exportables is None:
+            return exportables
+        else:
+            filtered_exportables = []
+            for exportable in exportables:
+                try:
+                    field_name = exportable.field.__name__
+                    if field_name not in self.excluded_exportables:
+                        filtered_exportables.append(exportable)
+                except AttributeError:
+                    filtered_exportables.append(exportable)
+
+            return filtered_exportables
 
     def get_factories(self, p_type_fti):
         factories = getAdapters((p_type_fti, self.context, self.request),

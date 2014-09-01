@@ -25,6 +25,8 @@ from collective.excelexport.interfaces import IExportable
 from collective.excelexport.exportables.base import BaseExportableFactory
 from plone.supermodel.interfaces import FIELDSETS_KEY
 
+from Products.CMFPlone.utils import safe_unicode
+
 
 def non_fieldset_fields(schema):
     fieldset_fields = []
@@ -158,7 +160,7 @@ class BaseFieldRenderer(object):
     def render_collection_entry(self, obj, value):
         """Render a value element if the field is a sub field of a collection
         """
-        return str(value or "")
+        return safe_unicode(value or "")
 
     def render_style(self, value, base_style):
         """Gets the style rendering of the
@@ -265,9 +267,10 @@ class RichTextFieldRenderer(BaseFieldRenderer):
             return ""
 
         ptransforms = getToolByName(obj, 'portal_transforms')
-        text = ptransforms.convert('text_to_html', value.output).getData()
+        text = safe_unicode(ptransforms.convert('text_to_html', value.output).getData())
         if len(text) > 50:
             return text[:47] + u"..."
+        return text
 
 
 try:
