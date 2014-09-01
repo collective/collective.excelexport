@@ -49,8 +49,8 @@ setup(
         'test': [
             'ecreall.helpers.testing',
             'plone.app.testing',
-            'plone.app.robotframework',
             'plone.app.dexterity',
+            'plone.app.relationfield',
             'xlrd',
         ],
     },
