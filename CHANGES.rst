@@ -5,7 +5,8 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Feature: Add sort exportables feature using exportables_order list.
+  [cedricmessiant]
 
 
 1.2 (2014-09-10)

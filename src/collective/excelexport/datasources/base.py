@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from zope.interface import implements
 from zope.component import getAdapters
 from zope.component import getUtility
@@ -20,6 +22,7 @@ class BaseContentsDataSource(object):
     implements(IDataSource)
     excluded_factories = None
     excluded_exportables = None
+    exportables_order = None  # use this to specify exportables order using field names
 
     def __init__(self, context, request):
         self.context = context
@@ -51,6 +54,26 @@ class BaseContentsDataSource(object):
                     filtered_exportables.append(exportable)
 
             return filtered_exportables
+
+    def sort_exportables(self, exportables):
+        """Sort exportables using self.exportables_order.
+
+        Override this method if you want a specific sort for your exportables.
+        """
+        if self.exportables_order is None:
+            return exportables
+        else:
+            sorted_exportables = []
+            exportables_dict = OrderedDict(
+                [(x.field.getName(), x) for x in exportables])
+            for field in self.exportables_order:
+                if field in exportables_dict:
+                    sorted_exportables.append(exportables_dict[field])
+                    del exportables_dict[field]
+
+            # add remaining fields
+            sorted_exportables.extend([x for x in exportables_dict.values()])
+            return sorted_exportables
 
     def get_factories(self, p_type_fti):
         factories = getAdapters((p_type_fti, self.context, self.request),
@@ -99,10 +122,14 @@ class BaseContentsDataSource(object):
             for factory in factories:
                 exportables.extend(factory.get_exportables())
 
+            # filter and sort
+            exportables = self.filter_exportables(exportables)
+            exportables = self.sort_exportables(exportables)
+
             title = p_type_fti.Title()
             data.append({'title': title,
                          'objects': p_types_objects[p_type],
-                         'exportables': self.filter_exportables(exportables)
+                         'exportables': exportables
                         })
 
         return data
