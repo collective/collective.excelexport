@@ -11,10 +11,10 @@ class ExportUrl(object):
         params = dict((key.replace('[]', ''), val)
                       for key, val in params.items())
 
-        if 'version' in params:
-            del params['version']
-        if 'b_start' in params:
-            del params['b_start']
+        ignored_params = ('version', 'b_start', 'reversed')
+        for ignored in ignored_params:
+            if ignored in params:
+                del params[ignored]
 
         criteria = ICriteria(self.context)
         for param in params.keys():

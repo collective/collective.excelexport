@@ -5,6 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Fix: Ignore reverse parameter when creating export url.
+  [cedricmessiant]
+
 - Feature: Add sort exportables feature using exportables_order list.
   [cedricmessiant]
 
