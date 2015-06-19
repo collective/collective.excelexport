@@ -243,17 +243,21 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
+
     adapts(ICollection, Interface, Interface)
+
+    separator = u"\n"
 
     def render_value(self, obj):
         """Gets the value to render in excel file from content value
         """
         value = self.get_value(obj)
-        sub_renderer = getMultiAdapter((self.field.value_type,
-                                        self.context, self.request),
-                                        interface=IExportable)
-        return value and u"\n".join([sub_renderer.render_collection_entry(obj, v)
-                                     for v in value]) or u""
+        sub_renderer = getMultiAdapter(
+            (self.field.value_type, self.context, self.request),
+            interface=IExportable)
+        return value and self.separator.join(
+            [sub_renderer.render_collection_entry(obj, v)
+             for v in value]) or u""
 
 
 class TextFieldRenderer(BaseFieldRenderer):
