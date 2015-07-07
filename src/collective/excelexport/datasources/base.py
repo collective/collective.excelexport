@@ -64,8 +64,14 @@ class BaseContentsDataSource(object):
             return exportables
         else:
             sorted_exportables = []
+            def get_name(column):
+                if hasattr(column, 'field'):
+                    return column.field.getName()
+                else:
+                    return column.__class__.__name__
+
             exportables_dict = OrderedDict(
-                [(x.field.getName(), x) for x in exportables])
+                [(get_name(x), x) for x in exportables])
             for field in self.exportables_order:
                 if field in exportables_dict:
                     sorted_exportables.append(exportables_dict[field])

@@ -11,6 +11,9 @@ Changelog
 - Feature: Add sort exportables feature using exportables_order list.
   [cedricmessiant]
 
+- Fix: Sort exportables features even if they are not fields
+  [ebrehault]
+
 
 1.2 (2014-09-10)
 ----------------
