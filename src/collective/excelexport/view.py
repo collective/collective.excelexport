@@ -170,7 +170,11 @@ class CSVExport(BaseExport):
             for obj in sheetinfo['objects']:
                 valuesline = []
                 for exportable in sheetinfo['exportables']:
-                    render = exportable.render_value(obj)
+                    bound_obj = obj
+                    if hasattr(exportable, 'field'):
+                        bound_obj = exportable.field.bind(obj).context
+
+                    render = exportable.render_value(bound_obj)
                     render = self._format_render(render)
                     valuesline.append(render)
 
