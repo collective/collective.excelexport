@@ -13,6 +13,7 @@ from Products.Five.browser import BrowserView
 
 from collective.excelexport.interfaces import IDataSource, IStyles
 
+
 class BaseExport(BrowserView):
 
     def set_headers(self, datasource):

@@ -5,6 +5,19 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Feature: render_style can now return a Style object with content and headers
+  attribute to be able to customise the header style per exportable.
+  [vincentfretin]
+
+- Feature: the passed obj to render_value is now
+  exportable.field.bind(obj).context to make it easier to get data from
+  parent or grandparent.
+  [vincentfretin]
+
+- Feature: BaseFieldRenderer.render_header method returns now the translated field
+  title instead of the Message object.
+  [vincentfretin]
+
 - Fix: Ignore reverse parameter when creating export url.
   [cedricmessiant]
 
