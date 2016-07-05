@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Base module for unittesting."""
 
+import unittest
+
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -11,8 +13,6 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.testing import z2
-
-import unittest2 as unittest
 
 import collective.excelexport
 
