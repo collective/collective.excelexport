@@ -8,6 +8,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
+from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
 
 from z3c.form.interfaces import NO_VALUE
@@ -26,6 +27,27 @@ from collective.excelexport.exportables.base import BaseExportableFactory
 from plone.supermodel.interfaces import FIELDSETS_KEY
 
 from Products.CMFPlone.utils import safe_unicode
+
+
+class FieldWrapper(object):
+
+    def __init__(self, field):
+        self.field = field
+
+    def __getattr__(self, name):
+        return getattr(self.field, name)
+
+
+class ParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__)
+
+
+class GrandParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__.__parent__)
 
 
 def non_fieldset_fields(schema):
@@ -147,8 +169,14 @@ class BaseFieldRenderer(object):
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
 
+    def _translate(self, value):
+        if isinstance(value, Message):
+            return translate(value, context=self.request)
+
+        return value
+
     def render_header(self):
-        return self.field.title
+        return self._translate(self.field.title)
 
     def render_value(self, obj):
         value = self.get_value(obj)
@@ -162,9 +190,11 @@ class BaseFieldRenderer(object):
         """
         return safe_unicode(value or "")
 
-    def render_style(self, value, base_style):
+    def render_style(self, obj, base_style):
         """Gets the style rendering of the
         base_style is the default style of a cell for content
+        You can modify base_style, it's already a copy, and return it.
+        You can return a Style object with headers and content attributes too.
         """
         return base_style
 

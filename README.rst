@@ -44,6 +44,36 @@ If you want to define new columns for your excel export, you will write or overr
   - Exportable factories, adapters for IExportableFactory interface that provides a list of Exportables
   - Exportables, that define columns.
 
+Example of an exportable factory:
+
+    from plone.dexterity.interfaces import IDexterityFTI
+    from collective.excelexport.exportables.base import BaseExportableFactory
+    from collective.excelexport.exportables.dexterityfields import get_ordered_fields
+    from collective.excelexport.exportables.dexterityfields import get_exportable
+    from collective.excelexport.exportables.dexterityfields import ParentField
+    from collective.excelexport.exportables.dexterityfields import GrandParentField
+
+    class PSTActionFieldsFactory(BaseExportableFactory):
+        adapts(IDexterityFTI, Interface, Interface)
+        portal_types = ('pstaction',)
+
+        def get_exportables(self):
+            portal_types = api.portal.get_tool('portal_types')
+            action_fti = portal_types['pstaction']
+            oo_fti = portal_types['operationalobjective']
+            os_fti = portal_types['strategicobjective']
+            fields = []
+            fields.extend([get_exportable(
+                field[1], self.context, self.request)
+                for field in get_ordered_fields(action_fti)])
+            fields.extend([get_exportable(
+                ParentField(field[1]), self.context, self.request)
+                for field in get_ordered_fields(oo_fti)])
+            fields.extend([get_exportable(
+                GrandParentField(field[1]), self.context, self.request)
+                for field in get_ordered_fields(os_fti)])
+            return fields
+
 
 Dexterity exportables
 ---------------------
