@@ -1,4 +1,5 @@
 # -*- encoding: utf-8 -*-
+from Acquisition import aq_base
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory, IBool, IText
@@ -151,7 +152,7 @@ class DexterityValueGetter(object):
         self.context = context
 
     def get(self, field):
-        return getattr(self.context, field.__name__, None)
+        return getattr(aq_base(self.context), field.__name__, None)
 
 
 class BaseFieldRenderer(object):

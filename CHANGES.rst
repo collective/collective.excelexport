@@ -5,6 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Fix: be sure to not retrieve an attribute on an object by acquisition.
+  [vincentfretin]
+
 - Feature: render_style can now return a Style object with content and headers
   attribute to be able to customise the header style per exportable.
   [vincentfretin]
