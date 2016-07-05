@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from zope.interface import Interface
-from zope.schema.interfaces import IField, IDate, ICollection,\
+from zope.schema.interfaces import IField, IDate, IDatetime, ICollection,\
     IVocabularyFactory, IBool, IText
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
@@ -129,7 +129,11 @@ class DexterityValueGetter(object):
         self.context = context
 
     def get(self, field):
-        return getattr(self.context, field.__name__, None)
+        value = field.query(field.context)
+        if callable(value):
+            value = value()
+
+        return value
 
 
 class BaseFieldRenderer(object):
@@ -199,6 +203,21 @@ class DateFieldRenderer(BaseFieldRenderer):
 
     def render_style(self, obj, base_style):
         base_style.num_format_str = 'yyyy/mm/dd'
+        return base_style
+
+
+class DatetimeFieldRenderer(BaseFieldRenderer):
+    adapts(IDatetime, Interface, Interface)
+
+    def get_value(self, obj):
+        res = super(DatetimeFieldRenderer, self).get_value(obj)
+        return res.strftime("%Y/%m/%d %H:%M")
+
+    def render_collection_entry(self, obj, value):
+        return value.strftime("%Y/%m/%d %H:%M")
+
+    def render_style(self, obj, base_style):
+        base_style.num_format_str = 'yyyy/mm/dd hh:mm'
         return base_style
 
 
