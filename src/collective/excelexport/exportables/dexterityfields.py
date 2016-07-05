@@ -193,6 +193,8 @@ class BaseFieldRenderer(object):
     def render_style(self, obj, base_style):
         """Gets the style rendering of the
         base_style is the default style of a cell for content
+        You can modify base_style, it's already a copy, and return it.
+        You can return a Style object with headers and content attributes too.
         """
         return base_style
 
