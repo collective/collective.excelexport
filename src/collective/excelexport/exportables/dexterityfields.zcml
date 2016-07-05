@@ -30,9 +30,6 @@
     <adapter factory=".dexterityfields.DateFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 
-    <adapter factory=".dexterityfields.DatetimeFieldRenderer"
-             provides="collective.excelexport.interfaces.IExportable" />
-
     <adapter factory=".dexterityfields.ChoiceFieldRenderer"
              provides="collective.excelexport.interfaces.IExportable" />
 

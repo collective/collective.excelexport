@@ -11,8 +11,7 @@ from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from Products.Five.browser import BrowserView
 
-from collective.excelexport.interfaces import IDataSource, IStyles, IExportable
-from collective.excelexport.exportables.dexterityfields import get_exportable
+from collective.excelexport.interfaces import IDataSource, IStyles
 
 class BaseExport(BrowserView):
 
@@ -53,25 +52,23 @@ class ExcelExport(BaseExport):
         # values
         for rownum, obj in enumerate(sheetinfo['objects']):
             for exportablenum, exportable in enumerate(sheetinfo['exportables']):
-                if not IExportable.providedBy(exportable):
-                    # probably exportable is a field
-                    field = exportable.bind(obj)
-                    exportable = get_exportable(
-                        field, self.context, self.request)
-                else:
-                    exportable.field = exportable.field.bind(obj)
+                bound_obj = obj
+                if hasattr(exportable, 'field'):
+                    bound_obj = exportable.field.bind(obj).context
 
+                style = exportable.render_style(
+                    bound_obj, copy(styles.content))
+                style_headers = getattr(style, 'headers', styles.headers)
+                style_content = getattr(style, 'content', style)
                 if rownum == 0:
                     # headers
                     render = exportable.render_header()
                     render = self._format_render(render)
-                    sheet.write(0, exportablenum, render, styles.headers)
+                    sheet.write(0, exportablenum, render, style_headers)
 
-                render = exportable.render_value(obj)
+                render = exportable.render_value(bound_obj)
                 render = self._format_render(render)
-                style = exportable.render_style(obj, copy(styles.content))
-                print exportable, render, style
-                sheet.write(rownum + 1, exportablenum, render, style)
+                sheet.write(rownum + 1, exportablenum, render, style_content)
 
     def get_xldoc(self, sheetsinfo, styles):
         xldoc = xlwt.Workbook(encoding='utf-8')

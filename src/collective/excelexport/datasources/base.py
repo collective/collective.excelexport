@@ -11,6 +11,13 @@ from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.interfaces import IExportableFactory
 
 
+def get_name(column):
+    if hasattr(column, 'field'):
+        return column.field.getName()
+    else:
+        return column.__class__.__name__
+
+
 class BaseContentsDataSource(object):
     """
     Base class for a datasource that exports contents
@@ -46,11 +53,8 @@ class BaseContentsDataSource(object):
         else:
             filtered_exportables = []
             for exportable in exportables:
-                try:
-                    field_name = exportable.field.__name__
-                    if field_name not in self.excluded_exportables:
-                        filtered_exportables.append(exportable)
-                except AttributeError:
+                name = get_name(exportable)
+                if name not in self.excluded_exportables:
                     filtered_exportables.append(exportable)
 
             return filtered_exportables
@@ -64,12 +68,6 @@ class BaseContentsDataSource(object):
             return exportables
         else:
             sorted_exportables = []
-            def get_name(column):
-                if hasattr(column, 'field'):
-                    return column.field.getName()
-                else:
-                    return column.__class__.__name__
-
             exportables_dict = OrderedDict(
                 [(get_name(x), x) for x in exportables])
             for field in self.exportables_order:

@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from zope.interface import Interface
-from zope.schema.interfaces import IField, IDate, IDatetime, ICollection,\
+from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory, IBool, IText
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
@@ -8,6 +8,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
+from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
 
 from z3c.form.interfaces import NO_VALUE
@@ -129,11 +130,7 @@ class DexterityValueGetter(object):
         self.context = context
 
     def get(self, field):
-        value = field.query(field.context)
-        if callable(value):
-            value = value()
-
-        return value
+        return getattr(self.context, field.__name__, None)
 
 
 class BaseFieldRenderer(object):
@@ -151,8 +148,14 @@ class BaseFieldRenderer(object):
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
 
+    def _translate(self, value):
+        if isinstance(value, Message):
+            return translate(value, context=self.request)
+
+        return value
+
     def render_header(self):
-        return self.field.title
+        return self._translate(self.field.title)
 
     def render_value(self, obj):
         value = self.get_value(obj)
@@ -166,7 +169,7 @@ class BaseFieldRenderer(object):
         """
         return safe_unicode(value or "")
 
-    def render_style(self, value, base_style):
+    def render_style(self, obj, base_style):
         """Gets the style rendering of the
         base_style is the default style of a cell for content
         """
@@ -203,21 +206,6 @@ class DateFieldRenderer(BaseFieldRenderer):
 
     def render_style(self, obj, base_style):
         base_style.num_format_str = 'yyyy/mm/dd'
-        return base_style
-
-
-class DatetimeFieldRenderer(BaseFieldRenderer):
-    adapts(IDatetime, Interface, Interface)
-
-    def get_value(self, obj):
-        res = super(DatetimeFieldRenderer, self).get_value(obj)
-        return res.strftime("%Y/%m/%d %H:%M")
-
-    def render_collection_entry(self, obj, value):
-        return value.strftime("%Y/%m/%d %H:%M")
-
-    def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd hh:mm'
         return base_style
 
 
