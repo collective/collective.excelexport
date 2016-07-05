@@ -29,6 +29,27 @@ from plone.supermodel.interfaces import FIELDSETS_KEY
 from Products.CMFPlone.utils import safe_unicode
 
 
+class FieldWrapper(object):
+
+    def __init__(self, field):
+        self.field = field
+
+    def __getattr__(self, name):
+        return getattr(self.field, name)
+
+
+class ParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__)
+
+
+class GrandParentField(FieldWrapper):
+
+    def bind(self, obj):
+        return self.field.bind(obj.__parent__.__parent__)
+
+
 def non_fieldset_fields(schema):
     fieldset_fields = []
     fieldsets = schema.queryTaggedValue(FIELDSETS_KEY, [])
