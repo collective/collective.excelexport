@@ -5,6 +5,11 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Fix: try to get the value of a method if the field is a method and translate
+  DateTime results to a unicode, this fixes the export for objects with the IPublication
+  Behavior.
+  [pcdummy]
+
 - Fix: be sure to not retrieve an attribute on an object by acquisition.
   [vincentfretin]
 
