@@ -5,6 +5,11 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Feature: only export fields where the current user has the permission to read
+  that field. The security check doesn't not happen on the object but
+  on the context of the calling view for performance reasons.
+  [pcdummy]
+
 - Fix: be sure to not retrieve an attribute on an object by acquisition.
   [vincentfretin]
 
@@ -65,4 +70,3 @@ Changelog
 
 - Initial release.
   [thomasdesvenain]
-

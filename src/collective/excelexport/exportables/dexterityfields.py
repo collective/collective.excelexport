@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_base
+from AccessControl import getSecurityManager
 from zope.interface import Interface
 from zope.schema.interfaces import IField, IDate, ICollection,\
     IVocabularyFactory, IBool, IText
@@ -7,7 +8,9 @@ from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.component.interfaces import ComponentLookupError
+from zope.security.interfaces import IPermission
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
@@ -16,11 +19,13 @@ from z3c.form.interfaces import NO_VALUE
 
 from plone.app.textfield.interfaces import IRichText
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.autoform.interfaces import READ_PERMISSIONS_KEY
 from plone.behavior.interfaces import IBehavior
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
+from plone.supermodel.utils import mergedTaggedValueDict
 from plone import api
 
 from collective.excelexport.interfaces import IExportable
@@ -51,18 +56,41 @@ class GrandParentField(FieldWrapper):
         return self.field.bind(obj.__parent__.__parent__)
 
 
-def non_fieldset_fields(schema):
+def non_fieldset_fields(schema, context):
     fieldset_fields = []
     fieldsets = schema.queryTaggedValue(FIELDSETS_KEY, [])
 
     for fieldset in fieldsets:
         fieldset_fields.extend(fieldset.fields)
 
-    fields = [info[0] for info in getFieldsInOrder(schema)]
+    fields = [info[0] for info in get_fields_in_order_with_permission(schema, context)]
     return [f for f in fields if f not in fieldset_fields]
 
 
-def get_ordered_fields(fti):
+def get_fields_in_order_with_permission(schema, context):
+    checker = getSecurityManager().checkPermission
+    permissions = mergedTaggedValueDict(
+        schema,
+        READ_PERMISSIONS_KEY
+    )
+
+    result = []
+    for field in getFieldsInOrder(schema):
+        permission_name = permissions.get(field[0], None)
+        if permission_name is not None:
+            permission = queryUtility(IPermission,
+                                      name=permission_name)
+            if permission:
+                if not checker(permission.title, context):
+                    # Ignore this field
+                    continue
+
+        result.append(field)
+
+    return result
+
+
+def get_ordered_fields(fti, context):
     # this code is much complicated because we have to get sure
     # we get the fields in the order of the fieldsets
     # the order of the fields in the fieldsets can differ
@@ -76,21 +104,21 @@ def get_ordered_fields(fti):
         ordered_fieldsets.append(fieldset.__name__)
         fieldset_fields[fieldset.__name__] = fieldset.fields
 
-    fieldset_fields['default'] = non_fieldset_fields(schema)
+    fieldset_fields['default'] = non_fieldset_fields(schema, context)
 
     # Get the behavior fields
-    fields = getFieldsInOrder(schema)
+    fields = get_fields_in_order_with_permission(schema, context)
     for behavior_id in fti.behaviors:
         schema = getUtility(IBehavior, behavior_id).interface
         if not IFormFieldProvider.providedBy(schema):
             continue
 
-        fields.extend(getFieldsInOrder(schema))
+        fields.extend(get_fields_in_order_with_permission(schema, context))
         for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
             fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
             ordered_fieldsets.append(fieldset.__name__)
 
-        fieldset_fields['default'].extend(non_fieldset_fields(schema))
+        fieldset_fields['default'].extend(non_fieldset_fields(schema, context))
 
     ordered_fields = []
     for fieldset in ordered_fieldsets:
@@ -125,7 +153,7 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
     weight = 100
 
     def get_exportables(self):
-        fields = get_ordered_fields(self.fti)
+        fields = get_ordered_fields(self.fti, self.context)
         exportables = []
         for field in fields:
             exportables.append(get_exportable(field[1],
@@ -345,7 +373,7 @@ try:
         adapts(IRow, Interface, Interface)
 
         def render_collection_entry(self, obj, value):
-            fields = getFieldsInOrder(self.field.schema)
+            fields = get_fields_in_order_with_permission(self.field.schema, self.context)
             field_renderings = []
             for fieldname, field in fields:
                 sub_renderer = getMultiAdapter((field,
