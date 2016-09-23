@@ -5,6 +5,7 @@ from StringIO import StringIO
 import xlwt
 from xlwt import CompoundDoc
 
+from DateTime import DateTime
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
@@ -46,6 +47,8 @@ class ExcelExport(BaseExport):
             render = translate(render, context=self.request)
         elif isinstance(render, str):
             render = unicode(render)
+        elif isinstance(render, DateTime):
+            render = unicode(render.strftime("%Y/%m/%d"))
 
         return render
 

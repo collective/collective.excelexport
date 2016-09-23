@@ -152,7 +152,10 @@ class DexterityValueGetter(object):
         self.context = context
 
     def get(self, field):
-        return getattr(aq_base(self.context), field.__name__, None)
+        value = getattr(aq_base(self.context), field.__name__, None)
+        if hasattr(value, '__call__'):
+            value = value()
+        return value
 
 
 class BaseFieldRenderer(object):
