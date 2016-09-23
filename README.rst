@@ -44,7 +44,7 @@ If you want to define new columns for your excel export, you will write or overr
   - Exportable factories, adapters for IExportableFactory interface that provides a list of Exportables
   - Exportables, that define columns.
 
-Example of an exportable factory:
+Example of an exportable factory: ::
 
     from plone.dexterity.interfaces import IDexterityFTI
     from collective.excelexport.exportables.base import BaseExportableFactory
