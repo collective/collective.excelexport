@@ -286,9 +286,14 @@ class CollectionFieldRenderer(BaseFieldRenderer):
         """Gets the value to render in excel file from content value
         """
         value = self.get_value(obj)
+        value_type = self.field.value_type
+        if not value_type:
+            value_type = self.field
+
         sub_renderer = getMultiAdapter(
-            (self.field.value_type, self.context, self.request),
+            (value_type, self.context, self.request),
             interface=IExportable)
+
         return value and self.separator.join(
             [sub_renderer.render_collection_entry(obj, v)
              for v in value]) or u""

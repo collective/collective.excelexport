@@ -5,6 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Fix: check if value_type is empty for collection field render.
+  [bsuttor]
+
 - Fix: try to get the value of a method if the field is a method and translate
   DateTime results to a unicode, this fixes the export for objects with the IPublication
   Behavior.
