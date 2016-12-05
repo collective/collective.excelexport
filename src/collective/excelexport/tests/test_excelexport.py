@@ -20,7 +20,7 @@ from collective.excelexport.datasources.folder import FolderContentsDataSource
 TEST_IMAGE = os.path.join(os.path.dirname(__file__), 'logoplone.png')
 
 
-class TestInstall(IntegrationTestCase):
+class TestExcelExport(IntegrationTestCase):
     """Test installation of collective.excelexport into Plone."""
 
     def _get_generated_filepath(self, output, suffix):
@@ -40,7 +40,7 @@ class TestInstall(IntegrationTestCase):
         container = api.content.create(self.portal, type='Folder', id='container')
         self.content1 = api.content.create(container, type='member', id='johndoe',
                                            title="John Doe",
-                                           birth_date=datetime.date(1980, 07, 24),
+                                           birth_date=datetime.date(1980, 7, 24),
                                            amount=100,
                                            subscription='silver',
                                            languages=('en', 'fr'),
@@ -78,11 +78,14 @@ ce sera moi.""",
         self.assertIn(ICollectiveExcelexportLayer, utils.registered_layers())
 
     def test_export(self):
+        self.content3 = api.content.create(self.portal.container,
+                                           type='member2', id='jfk',
+                                           title="John Fitzgerald Kennedy")
         import xlrd
         output = self.portal.container.unrestrictedTraverse('@@collective.excelexport')()
         generated_path = self._get_generated_filepath(output, 'test.xls')
         sheets = xlrd.open_workbook(generated_path)
-        self.assertEqual(sheets.sheet_names(), ['member'])
+        self.assertEqual(sheets.sheet_names(), ['member', 'member 2'])
         sheet = sheets.sheet_by_name(u'member')
         headers_row = sheet.row_values(0)
         self.assertEqual(headers_row, [u'Name', u"Biography", u'Birth date',
@@ -99,6 +102,9 @@ ce sera moi.""",
                                 29791.0, u'', 100.0,
                                 u'English\nEspa\xf1ol', u'', u'John Doe'])
         os.remove(generated_path)
+        sheet2 = sheets.sheet_by_name(u'member 2')
+        sheet2_row1 = sheet2.row_values(1)
+        self.assertEqual(sheet2_row1, [u'John Fitzgerald Kennedy', '', '', '', '', '', '', ''])
 
     def test_csv_export(self):
         output = self.portal.container.unrestrictedTraverse('@@collective.excelexportcsv')()
