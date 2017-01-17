@@ -13,6 +13,15 @@ class IDataSource(Interface):
     """Gets the fields and objects to serialize in excel file
     provided by a named adapter that adapts the context and the request
     """
+    exportables_order = Attribute("""List of exportable names by order of appareance in the export table.
+    The names are the field names and/or the names of the exportable classes.
+    """)
+    excluded_exportables = Attribute("""List of exportables excluded from this source.
+    The names are the field names and/or the names of the exportable classes.
+    """)
+    excluded_factories = Attribute("""List of exportable factories excluded from this source.
+    The names are the IExportableFactory utility names.
+    """)
 
     def get_filename(self):
         """Gets the file name (without extension) of the exported excel

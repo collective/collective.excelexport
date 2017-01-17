@@ -5,20 +5,6 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- Refactor: view exposes method that creates data buffer from sheet data.
-  [thomasdesvenain]
-
-- Fix: check if value_type is empty for collection field render.
-  [bsuttor]
-
-- Fix: try to get the value of a method if the field is a method and translate
-  DateTime results to a unicode, this fixes the export for objects with the IPublication
-  Behavior.
-  [pcdummy]
-
-- Fix: be sure to not retrieve an attribute on an object by acquisition.
-  [vincentfretin]
-
 - Feature: render_style can now return a Style object with content and headers
   attribute to be able to customise the header style per exportable.
   [vincentfretin]
@@ -32,14 +18,26 @@ Changelog
   title instead of the Message object.
   [vincentfretin]
 
+- Feature: Add sort exportables feature using exportables_order list.
+  Works with field and non-field exportables.
+  [cedricmessiant, ebrehault, thomasdevenain]
+
+- Fix: try to get the value of a method if the field is a method and translate
+  DateTime results to a unicode, this fixes the export for objects with the IPublication
+  Behavior.
+  [pcdummy]
+
+- Fix: check if value_type is empty for collection field render.
+  [bsuttor]
+
+- Fix: be sure to not retrieve an attribute on an object by acquisition.
+  [vincentfretin]
+
 - Fix: Ignore reverse parameter when creating export url.
   [cedricmessiant]
 
-- Feature: Add sort exportables feature using exportables_order list.
-  [cedricmessiant]
-
-- Fix: Sort exportables features even if they are not fields
-  [ebrehault]
+- Refactor: view exposes method that creates data buffer from sheet data.
+  [thomasdesvenain]
 
 
 1.2 (2014-09-10)
