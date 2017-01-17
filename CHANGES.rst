@@ -5,6 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Fix: Don't ommit fields that are in the default fieldset if there is one
+  [petchesi-iulian]
+
 - Fix: check if value_type is empty for collection field render.
   [bsuttor]
 
