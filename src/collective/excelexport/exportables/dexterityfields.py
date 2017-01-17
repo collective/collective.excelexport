@@ -76,7 +76,7 @@ def get_ordered_fields(fti):
         ordered_fieldsets.append(fieldset.__name__)
         fieldset_fields[fieldset.__name__] = fieldset.fields
 
-    if fieldset_fields.get('default', None):
+    if fieldset_fields.get('default', []):
         fieldset_fields['default'] += non_fieldset_fields(schema)
     else:
         fieldset_fields['default'] = non_fieldset_fields(schema)
