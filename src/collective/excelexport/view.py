@@ -32,6 +32,20 @@ class BaseExport(BrowserView):
             'attachment; filename="%s"' % filename
             )
 
+    def get_data_buffer(self, sheetsinfo, policy=None):
+        raise NotImplementedError
+
+    def __call__(self):
+        # get all values to display, one value by sheet
+        policy = self.request.get('excelexport.policy', '')
+        datasource = getMultiAdapter((self.context, self.request),
+                                     interface=IDataSource, name=policy)
+        self.set_headers(datasource)
+        sheetsinfo = datasource.get_sheets_data()
+
+        string_buffer = self.get_data_buffer(sheetsinfo, policy=policy)
+        return string_buffer.getvalue()
+
 
 class ExcelExport(BaseExport):
     """Excel export view
@@ -100,16 +114,8 @@ class ExcelExport(BaseExport):
 
         return xldoc
 
-    def __call__(self):
+    def get_data_buffer(self, sheetsinfo, policy=''):
         string_buffer = StringIO()
-
-        # get all values to display, one value by sheet
-        policy = self.request.get('excelexport.policy', '')
-        datasource = getMultiAdapter((self.context, self.request),
-                               interface=IDataSource, name=policy)
-        self.set_headers(datasource)
-        sheetsinfo = datasource.get_sheets_data()
-
         try:
             styles = getMultiAdapter((self.context, self.request),
                                      interface=IStyles, name=policy)
@@ -121,7 +127,7 @@ class ExcelExport(BaseExport):
         doc = CompoundDoc.XlsDoc()
         data = xldoc.get_biff_data()
         doc.save(string_buffer, data)
-        return string_buffer.getvalue()
+        return string_buffer
 
 
 class CSVExport(BaseExport):
@@ -140,17 +146,15 @@ class CSVExport(BaseExport):
         elif not isinstance(render, unicode):
             render = unicode(render)
 
-        return render.encode(encoding=self.encoding)
+        try:
+            return render.encode(encoding=self.encoding)
+        except UnicodeEncodeError:
+            # try default encoding
+            return render.encode(encoding='utf-8')
 
-    def __call__(self):
+    def get_data_buffer(self, sheetsinfo, policy=None):
         string_buffer = StringIO()
         csvhandler = csvwriter(string_buffer, dialect='excel', delimiter=';')
-        policy = self.request.get('excelexport.policy', '')
-        datasource = getMultiAdapter((self.context, self.request),
-                               interface=IDataSource, name=policy)
-        self.set_headers(datasource)
-        sheetsinfo = datasource.get_sheets_data()
-
         sheetsinfo = [s for s in sheetsinfo if len(s['exportables']) > 0]
         for sheetnum, sheetinfo in enumerate(sheetsinfo):
             # title if several tables
@@ -173,10 +177,7 @@ class CSVExport(BaseExport):
             for obj in sheetinfo['objects']:
                 valuesline = []
                 for exportable in sheetinfo['exportables']:
-                    bound_obj = obj
-                    if hasattr(exportable, 'field'):
-                        bound_obj = exportable.field.bind(obj).context
-
+                    bound_obj = exportable.field.bind(obj).context if hasattr(exportable, 'field') else obj
                     render = exportable.render_value(bound_obj)
                     render = self._format_render(render)
                     valuesline.append(render)
@@ -185,4 +186,4 @@ class CSVExport(BaseExport):
                     # write row only if there is one not empty line
                     csvhandler.writerow(valuesline)
 
-        return string_buffer.getvalue()
+        return string_buffer

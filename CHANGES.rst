@@ -5,6 +5,9 @@ Changelog
 1.3 (unreleased)
 ----------------
 
+- Refactor: view exposes method that creates data buffer from sheet data.
+  [thomasdesvenain]
+
 - Fix: check if value_type is empty for collection field render.
   [bsuttor]
 
