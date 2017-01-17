@@ -68,15 +68,21 @@ class BaseContentsDataSource(object):
             return exportables
         else:
             sorted_exportables = []
-            exportables_dict = OrderedDict(
-                [(get_name(x), x) for x in exportables])
-            for field in self.exportables_order:
-                if field in exportables_dict:
-                    sorted_exportables.append(exportables_dict[field])
-                    del exportables_dict[field]
+            exportables_dict = OrderedDict()
+            for x in exportables:
+                # we use list because there can be several exportables with same name
+                exportables_dict.setdefault(get_name(x), []).append(x)
+
+            for name in self.exportables_order:
+                if name in exportables_dict:
+                    sorted_exportables.extend(exportables_dict[name])
+                    del exportables_dict[name]
 
             # add remaining fields
-            sorted_exportables.extend([x for x in exportables_dict.values()])
+            # ensure they are exported in same order each time
+            for name, exportables in sorted(exportables_dict.items()):
+                sorted_exportables.extend(exportables)
+
             return sorted_exportables
 
     def get_factories(self, p_type_fti):
