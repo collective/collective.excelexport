@@ -19,7 +19,7 @@ long_description = (
 
 setup(
     name='collective.excelexport',
-    version='1.3.dev0',
+    version='1.4.dev0',
     description="Export dexterity contents in an excel file, one column by field",
     long_description=long_description,
     # Get more from http://pypi.python.org/pypi?%3Aaction=list_classifiers
