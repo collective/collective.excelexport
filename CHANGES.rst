@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.4 (unreleased)
+1.4 (2017-05-31)
 ----------------
 
 - Prevent removal of exportables with similar names when ordering them
