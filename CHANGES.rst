@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.5 (unreleased)
+1.5 (2017-11-28)
 ----------------
 
 - Upgrade bootstrap.
