@@ -5,8 +5,8 @@ Changelog
 1.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Upgrade bootstrap.
+  [sgeulette]
 
 1.4 (2017-05-31)
 ----------------
