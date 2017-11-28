@@ -11,6 +11,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
+from zope.schema.interfaces import IContextSourceBinder
 
 from z3c.form.interfaces import NO_VALUE
 
@@ -244,6 +245,10 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             return value
 
         vocabulary = self.field.vocabulary
+        # for source vocabulary
+        if IContextSourceBinder.providedBy(vocabulary):
+            vocabulary = vocabulary(obj)
+        # for named vocabulary
         if not vocabulary:
             vocabularyName = self.field.vocabularyName
             if vocabularyName:

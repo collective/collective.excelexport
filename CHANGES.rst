@@ -7,6 +7,8 @@ Changelog
 
 - Upgrade bootstrap.
   [sgeulette]
+- Fix: render choice field with source vocabulary
+  [sgeulette]
 
 1.4 (2017-05-31)
 ----------------
