@@ -5,8 +5,8 @@ Changelog
 1.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Fix: no limit for number of results in eeafaceted datasource.
+  [cedricmessiant]
 
 1.5 (2017-11-28)
 ----------------

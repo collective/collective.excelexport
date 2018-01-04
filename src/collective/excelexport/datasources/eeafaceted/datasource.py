@@ -22,5 +22,6 @@ class FacetedSearchDataSource(BaseContentsDataSource):
         if 'excelexport.policy' in params:
             del params['excelexport.policy']
 
+        params['batch'] = False
         brains = faceted_query_view.query(**params)
-        return [b.getObject() for b in brains._sequence]
+        return [b.getObject() for b in brains]
