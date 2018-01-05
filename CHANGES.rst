@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.6 (unreleased)
+1.6 (2018-01-05)
 ----------------
 
 - Fix: no limit for number of results in eeafaceted datasource.
