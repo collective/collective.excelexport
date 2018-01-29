@@ -42,7 +42,6 @@ class BaseExport(BrowserView):
                                      interface=IDataSource, name=policy)
         self.set_headers(datasource)
         sheetsinfo = datasource.get_sheets_data()
-
         string_buffer = self.get_data_buffer(sheetsinfo, policy=policy)
         return string_buffer.getvalue()
 
@@ -70,9 +69,11 @@ class ExcelExport(BaseExport):
         # values
         for rownum, obj in enumerate(sheetinfo['objects']):
             for exportablenum, exportable in enumerate(sheetinfo['exportables']):
-                bound_obj = obj
-                if hasattr(exportable, 'field'):
+                try:
+                    # dexterity
                     bound_obj = exportable.field.bind(obj).context
+                except AttributeError:
+                    bound_obj = obj
 
                 style = exportable.render_style(
                     bound_obj, copy(styles.content))

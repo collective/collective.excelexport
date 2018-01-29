@@ -17,6 +17,8 @@ def get_name(column):
     else:
         return column.__class__.__name__
 
+CONFIGURATION_FIELDS = ['constrainTypesMode', 'locallyAllowedTypes', 'immediatelyAddableTypes', 'nextPreviousEnabled', 'allowDiscussion', 'excludeFromNav']
+
 
 class BaseContentsDataSource(object):
     """
@@ -28,7 +30,7 @@ class BaseContentsDataSource(object):
     """
     implements(IDataSource)
     excluded_factories = None
-    excluded_exportables = None
+    excluded_exportables = CONFIGURATION_FIELDS
     exportables_order = None  # use this to specify exportables order using field names
 
     def __init__(self, context, request):
@@ -134,6 +136,9 @@ class BaseContentsDataSource(object):
 
             # filter and sort
             exportables = self.filter_exportables(exportables)
+            if len(exportables) == 0:
+                continue
+
             exportables = self.sort_exportables(exportables)
 
             title = p_type_fti.Title()

@@ -5,7 +5,7 @@ Changelog
 1.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Archetypes support. Products.ATExtensions support.
 
 
 1.6 (2018-01-05)
