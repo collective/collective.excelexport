@@ -5,7 +5,7 @@ Changelog
 1.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fixed csv export mimetype.
 
 
 1.6 (2018-01-05)
