@@ -15,6 +15,8 @@
     <include package="plone.api" />
     <include package=".datasources" />
 
+    <include zcml:condition="installed plone.restapi" file="restapi.zcml" />
+
     <genericsetup:registerProfile
         name="default"
         title="collective.excelexport"

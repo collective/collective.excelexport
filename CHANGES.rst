@@ -5,6 +5,9 @@ Changelog
 1.7 (unreleased)
 ----------------
 
+- Added plone.restapi service.
+  [thomasdesvenain]
+
 - Fixed csv export mimetype.
 
 
