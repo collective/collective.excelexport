@@ -10,6 +10,7 @@ Changelog
 
 - Archetypes support. Products.ATExtensions support.
 
+- Fix encoding issue.
 
 1.6 (2018-01-05)
 ----------------

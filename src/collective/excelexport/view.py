@@ -11,7 +11,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from Products.Five.browser import BrowserView
-
+from Products.CMFPlone.utils import safe_unicode
 from collective.excelexport.interfaces import IDataSource, IStyles
 
 
@@ -59,7 +59,7 @@ class ExcelExport(BaseExport):
         if isinstance(render, Message):
             render = translate(render, context=self.request)
         elif isinstance(render, str):
-            render = unicode(render)
+            render = safe_unicode(render)
         elif isinstance(render, DateTime):
             render = unicode(render.strftime("%Y/%m/%d"))
 
