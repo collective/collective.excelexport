@@ -190,12 +190,12 @@ class ReferenceFieldRenderer(BaseFieldRenderer):
     def render_value(self, obj):
         value = self.get_value(obj)
         if self.field.multiValued:
-            return ', '.join([self.render_collection_entry(obj, v) for v in value])
+            return u', '.join([self.render_collection_entry(obj, v) for v in value])
         else:
             return self.render_collection_entry(obj, value)
 
     def render_collection_entry(self, obj, value):
-        return value.Title() if value else u""
+        return safe_unicode(value.Title()) if value else u""
 
 
 try:
@@ -210,7 +210,7 @@ try:
             rendered = []
             value = self.get_value(obj)
             for v in value:
-                rendered.append(' '.join([v[sv] for sv in subfields if v[sv] and v[sv].strip()]))
+                rendered.append(u' '.join([safe_unicode(v[sv]) for sv in subfields if v[sv] and v[sv].strip()]))
             return u', '.join(rendered)
 
 except ImportError:
@@ -230,7 +230,7 @@ try:
             subfields = self.field.getSubfields()
             render = []
             for v in value:
-                render.append(" ".join([v[s] for s in subfields if s in v]))
+                render.append(u" ".join([safe_unicode(v[s]) for s in subfields if s in v]))
             return u", ".join(render)
 
 except ImportError:
