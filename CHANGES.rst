@@ -5,6 +5,9 @@ Changelog
 1.7 (unreleased)
 ----------------
 
+- Fix error on eea.faceted when there is a widget operator.
+  [thomasdesvenain]
+
 - Archetypes support. Products.ATExtensions support.
 
 
