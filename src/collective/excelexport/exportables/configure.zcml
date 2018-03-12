@@ -9,4 +9,7 @@
     <include file="archetypesfields.zcml"
              zcml:condition="installed Products.Archetypes" />
 
+    <include file="atextensionsfields.zcml"
+             zcml:condition="installed Products.ATExtensions" />
+
 </configure>

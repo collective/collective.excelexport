@@ -8,7 +8,9 @@ Changelog
 - Fix error on eea.faceted when there is a widget operator.
   [thomasdesvenain]
 
-- Archetypes support. Products.ATExtensions support.
+- Archetypes support,
+  Products.ATExtensions support (RecordField, RecordsField, FormattableNamesField).
+  [thomasdesvenain]
 
 - Fix encoding issue.
 

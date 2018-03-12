@@ -1,14 +1,13 @@
 # -*- encoding: utf-8 -*-
-from collective.excelexport.exportables.base import BaseExportableFactory
-from collective.excelexport.exportables.base import IFieldValueGetter
-from collective.excelexport.interfaces import IExportable
-
 from Acquisition import aq_get
 from Products.ATContentTypes.interfaces import IATContentType
 from Products.Archetypes.interfaces import IField, IFileField, IBooleanField, IDateTimeField, ITextField, ILinesField, IReferenceField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.interfaces import IDynamicViewTypeInformation
 from Products.CMFPlone.utils import safe_unicode
+from collective.excelexport.exportables.base import BaseExportableFactory
+from collective.excelexport.exportables.base import IFieldValueGetter
+from collective.excelexport.interfaces import IExportable
 from z3c.form.interfaces import NO_VALUE
 from zope.component import adapts
 from zope.component import getMultiAdapter
@@ -196,42 +195,3 @@ class ReferenceFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         return safe_unicode(value.Title()) if value else u""
-
-
-try:
-    from Products.ATExtensions.field import FormattableNamesField
-
-
-    class FormattableNamesFieldRenderer(BaseFieldRenderer):
-        adapts(FormattableNamesField, Interface, Interface)
-
-        def render_value(self, obj):
-            subfields = self.field.getSubfields()
-            rendered = []
-            value = self.get_value(obj)
-            for v in value:
-                rendered.append(u' '.join([safe_unicode(v[sv]) for sv in subfields if v[sv] and v[sv].strip()]))
-            return u', '.join(rendered)
-
-except ImportError:
-    pass
-
-try:
-    from Products.ATExtensions.field import RecordsField
-
-
-    class RecordsFieldRenderer(BaseFieldRenderer):
-        adapts(RecordsField, Interface, Interface)
-
-        def render_value(self, obj):
-            value = self.get_value(obj)
-            if not value:
-                return u""
-            subfields = self.field.getSubfields()
-            render = []
-            for v in value:
-                render.append(u" ".join([safe_unicode(v[s]) for s in subfields if s in v]))
-            return u", ".join(render)
-
-except ImportError:
-    pass
