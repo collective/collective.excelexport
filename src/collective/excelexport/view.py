@@ -132,7 +132,7 @@ class ExcelExport(BaseExport):
 
 class CSVExport(BaseExport):
 
-    mimetype = 'application/vnd.ms-excel'
+    mimetype = 'text/csv'
     extension = 'csv'
     encoding = 'windows-1252'
 

@@ -1,0 +1,29 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:plone="http://namespaces.plone.org/plone">
+
+  <plone:service
+    method="GET"
+    accept="text/json,application/json"
+    factory=".restapi.CollectiveExcelexport"
+    name="@collective.excelexport"
+    for="*"
+    permission="plone.restapi.UseRESTAPI"
+  />
+
+  <plone:service
+    method="GET"
+    accept="text/json,application/json"
+    factory=".restapi.CollectiveExcelexportCsv"
+    name="@collective.excelexportcsv"
+    for="*"
+    permission="plone.restapi.UseRESTAPI"
+  />
+
+  <adapter
+    factory=".restapi.RestApiSearchDataSource"
+    provides="collective.excelexport.interfaces.IDataSource"
+    name="excelexport.restapi.search"
+  />
+
+</configure>
