@@ -62,6 +62,8 @@ class IExportable(Interface):
     """Render a value and a style from something, for example a field
     """
 
+    name = Attribute("""Name of the exportable, for use with filtering and sorting.""")
+
     def render_header(self):
         """Gets the value to render on the first row of excel sheet for this field
         """

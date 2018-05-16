@@ -5,6 +5,9 @@ Changelog
 1.7 (unreleased)
 ----------------
 
+- Exportables have explicit names.
+  It is now possible to exclude / order custom exportables.
+
 - Added plone.restapi service.
   [thomasdesvenain]
 

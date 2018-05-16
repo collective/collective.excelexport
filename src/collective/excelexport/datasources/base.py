@@ -11,7 +11,7 @@ from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.interfaces import IExportableFactory
 
 
-def get_name(column):
+def get_name(column):  # bbb
     if hasattr(column, 'field'):
         return column.field.getName()
     else:
@@ -71,7 +71,7 @@ class BaseContentsDataSource(object):
             exportables_dict = OrderedDict()
             for x in exportables:
                 # we use list because there can be several exportables with same name
-                exportables_dict.setdefault(get_name(x), []).append(x)
+                exportables_dict.setdefault(getattr(x, 'name', None) or get_name(x), []).append(x)
 
             for name in self.exportables_order:
                 if name in exportables_dict:

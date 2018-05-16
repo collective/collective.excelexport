@@ -88,6 +88,15 @@ You can also declare a named adapter with the field name if you want a specific
 rendering for one field.
 
 
+Custom exportable
+-----------------
+
+Exportable factories can get custom exportable instances.
+
+An exportable is just an object that provides IExportable interface
+(look at interface definition for more information).
+
+
 Styles
 ------
 

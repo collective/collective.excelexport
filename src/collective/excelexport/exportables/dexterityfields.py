@@ -1,37 +1,34 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_base
-from zope.interface import Interface
-from zope.schema.interfaces import IField, IDate, ICollection,\
-    IVocabularyFactory, IBool, IText
-from zope.schema import getFieldsInOrder
+from Products.CMFPlone.utils import safe_unicode
+from collective.excelexport.exportables.base import BaseExportableFactory
+from collective.excelexport.interfaces import IExportable
+from plone import api
+from plone.app.textfield.interfaces import IRichText
+from plone.autoform.interfaces import IFormFieldProvider
+from plone.behavior.interfaces import IBehavior
+from plone.dexterity.interfaces import IDexterityContent
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.namedfile.interfaces import INamedField
+from plone.schemaeditor.schema import IChoice
+from plone.supermodel.interfaces import FIELDSETS_KEY
+from z3c.form.interfaces import NO_VALUE
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
+from zope.interface import Interface
 from zope.interface.declarations import implements
+from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IContextSourceBinder
-
-from z3c.form.interfaces import NO_VALUE
-
-from plone.app.textfield.interfaces import IRichText
-from plone.autoform.interfaces import IFormFieldProvider
-from plone.behavior.interfaces import IBehavior
-from plone.dexterity.interfaces import IDexterityFTI
-from plone.dexterity.interfaces import IDexterityContent
-from plone.namedfile.interfaces import INamedField
-from plone.schemaeditor.schema import IChoice
-from plone import api
-
-from collective.excelexport.interfaces import IExportable
-from collective.excelexport.exportables.base import BaseExportableFactory
-from plone.supermodel.interfaces import FIELDSETS_KEY
-
-from Products.CMFPlone.utils import safe_unicode
+from zope.schema.interfaces import IField, IDate, ICollection, \
+    IVocabularyFactory, IBool, IText
 
 
 class FieldWrapper(object):
+    default_name_prefix = ''
 
     def __init__(self, field):
         self.field = field
@@ -166,10 +163,10 @@ class BaseFieldRenderer(object):
         self.field = field
         self.context = context
         self.request = request
+        self.name = self.field.__name__
 
     def __repr__(self):
-        return "<%s - %s>" % (self.__class__.__name__,
-                                   self.field.__name__)
+        return "<%s - %s>" % (self.__class__.__name__, self.name)
 
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
