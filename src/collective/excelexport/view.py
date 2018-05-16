@@ -1,21 +1,26 @@
-from csv import writer as csvwriter
-from copy import copy
 from StringIO import StringIO
+from copy import copy
+from csv import writer as csvwriter
 
 import xlwt
-from xlwt import CompoundDoc
-
 from DateTime import DateTime
+from Products.Five.browser import BrowserView
+from collective.excelexport.interfaces import IDataSource, IStyles
+from xlwt import CompoundDoc
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
-from Products.Five.browser import BrowserView
 
-from collective.excelexport.interfaces import IDataSource, IStyles
+HEAD_COLUMN_MODE_TITLE = 'title'
+HEAD_COLUMN_MODE_NAME = 'name'
 
 
 class BaseExport(BrowserView):
+    head_column_mode = HEAD_COLUMN_MODE_TITLE
+
+    def _format_render(self, render):
+        raise NotImplementedError
 
     def set_headers(self, datasource):
         self.request.response.setHeader('Cache-Control', 'no-cache')
@@ -30,7 +35,15 @@ class BaseExport(BrowserView):
         self.request.response.setHeader(
             'Content-disposition',
             'attachment; filename="%s"' % filename
-            )
+        )
+
+    def render_head_column(self, exportable):
+        if self.head_column_mode == HEAD_COLUMN_MODE_TITLE:
+            render = exportable.render_header()
+        elif self.head_column_mode == HEAD_COLUMN_MODE_NAME:
+            render = exportable.name
+
+        return self._format_render(render)
 
     def get_data_buffer(self, sheetsinfo, policy=None):
         raise NotImplementedError
@@ -80,8 +93,7 @@ class ExcelExport(BaseExport):
                 style_content = getattr(style, 'content', style)
                 if rownum == 0:
                     # headers
-                    render = exportable.render_header()
-                    render = self._format_render(render)
+                    self.render_header(exportable)
                     sheet.write(0, exportablenum, render, style_headers)
 
                 render = exportable.render_value(bound_obj)
@@ -167,8 +179,7 @@ class CSVExport(BaseExport):
             # headers
             headerline = []
             for exportable in sheetinfo['exportables']:
-                render = exportable.render_header()
-                render = self._format_render(render)
+                render = self.render_head_column(exportable)
                 headerline.append(render)
 
             csvhandler.writerow(headerline)

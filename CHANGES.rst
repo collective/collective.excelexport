@@ -5,8 +5,12 @@ Changelog
 1.7 (unreleased)
 ----------------
 
+- Add an attribute to view class to choose if column has exportable id or title.
+  [thomasdesvenain]
+
 - Exportables have explicit names.
   It is now possible to exclude / order custom exportables.
+  [thomasdesvenain]
 
 - Added plone.restapi service.
   [thomasdesvenain]
