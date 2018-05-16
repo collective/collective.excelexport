@@ -5,6 +5,9 @@ Changelog
 1.7 (unreleased)
 ----------------
 
+- BREAKING CHANGE: parent and grand parent fields names are now prefixed (by 'parent_' or 'grand_parent_').
+  Prevents name collisions.
+
 - Add an attribute to view class to choose if column has exportable id or title.
   [thomasdesvenain]
 

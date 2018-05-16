@@ -38,12 +38,14 @@ class FieldWrapper(object):
 
 
 class ParentField(FieldWrapper):
+    default_name_prefix = 'parent_'
 
     def bind(self, obj):
         return self.field.bind(obj.__parent__)
 
 
 class GrandParentField(FieldWrapper):
+    default_name_prefix = 'grand_parent_'
 
     def bind(self, obj):
         return self.field.bind(obj.__parent__.__parent__)
