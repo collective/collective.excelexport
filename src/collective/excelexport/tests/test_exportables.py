@@ -12,7 +12,11 @@ from zope.interface.declarations import implements
 
 from collective.excelexport.exportables.dexterityfields import ChoiceFieldRenderer
 from collective.excelexport.exportables.dexterityfields import IFieldValueGetter
+from collective.excelexport.exportables.dexterityfields import get_exportable_for_fieldname
+from collective.excelexport.interfaces import IExportable
 from collective.excelexport.testing import IntegrationTestCase
+
+from plone import api
 
 
 class IFakeInterface(Interface):
@@ -70,5 +74,7 @@ class TestExportables(IntegrationTestCase):
         self.assertEqual(renderer.render_value(renderer.context), 'Stephan Geulette')
 
     def test_get_exportable_for_fieldname(self):
-        """ """
-        pass
+        member = api.content.create(self.portal, type='member', id='johndoe', languages=['en', 'de'])
+        exportable = get_exportable_for_fieldname(member, 'languages', self.portal.REQUEST)
+        self.assertTrue(IExportable.providedBy(exportable))
+        self.assertEqual(exportable.render_value(member), u'English\nDeutsch')
