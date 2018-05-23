@@ -119,6 +119,14 @@ def get_exportable(field, context, request):
     return exportable
 
 
+def get_exportable_for_fieldname(context, fieldname, request):
+    """Get exportable from dexterity fieldname, context and request
+    """
+    # get the field
+    field = filter(lambda x: x[0] == fieldname, get_ordered_fields(context.getTypeInfo()))[0][1]
+    return get_exportable(field, context, request)
+
+
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """

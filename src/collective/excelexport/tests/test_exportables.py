@@ -68,3 +68,7 @@ class TestExportables(IntegrationTestCase):
         field.value = 'sgeulette'
         renderer = ChoiceFieldRenderer(field, self.folder, self.portal.REQUEST)
         self.assertEqual(renderer.render_value(renderer.context), 'Stephan Geulette')
+
+    def test_get_exportable_for_fieldname(self):
+        """ """
+        pass

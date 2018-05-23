@@ -10,6 +10,8 @@ Changelog
 
 - Fixed csv export mimetype.
 
+- Added helper method get_exportable_for_fieldname.
+  [gbastien]
 
 1.6 (2018-01-05)
 ----------------
