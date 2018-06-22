@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.7 (unreleased)
+1.7 (2018-06-22)
 ----------------
 
 - Added plone.restapi service.
