@@ -11,6 +11,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface.declarations import implements
+from zope.schema.interfaces import IContextSourceBinder
 
 from z3c.form.interfaces import NO_VALUE
 
@@ -119,6 +120,14 @@ def get_exportable(field, context, request):
                             interface=IExportable)
 
     return exportable
+
+
+def get_exportable_for_fieldname(context, fieldname, request):
+    """Get exportable from dexterity fieldname, context and request
+    """
+    # get the field
+    field = filter(lambda x: x[0] == fieldname, get_ordered_fields(context.getTypeInfo()))[0][1]
+    return get_exportable(field, context, request)
 
 
 class DexterityFieldsExportableFactory(BaseExportableFactory):
@@ -247,6 +256,10 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             return value
 
         vocabulary = self.field.vocabulary
+        # for source vocabulary
+        if IContextSourceBinder.providedBy(vocabulary):
+            vocabulary = vocabulary(obj)
+        # for named vocabulary
         if not vocabulary:
             vocabularyName = self.field.vocabularyName
             if vocabularyName:

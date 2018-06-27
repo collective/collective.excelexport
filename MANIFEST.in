@@ -1,3 +1,8 @@
-graft src/collective
-graft docs/
-include *.cfg *.rst *.in
+recursive-include src/collective *
+recursive-include docs *
+include *
+global-exclude *pyc
+exclude .installed.cfg
+exclude .mr.developer.cfg
+exclude buildout.d
+recursive-exclude buildout.d *.cfg

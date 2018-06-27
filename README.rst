@@ -123,6 +123,12 @@ and in python: ::
 	                         'pattern: pattern solid, back_colour white, fore_colour white; '
 	                         )
 
+plone.restapi
+=============
+
+To get an export via rest api, query @collective.excelexport / @collective.excelexportcsv (with one @)
+
+
 Tests
 =====
 
