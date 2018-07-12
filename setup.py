@@ -12,7 +12,7 @@ long_description = (
     '============\n'
     + '\n' +
     open('CONTRIBUTORS.rst').read()
-    + '\n' +
+    + '\n\n' +
     open('CHANGES.rst').read()
     + '\n')
 
