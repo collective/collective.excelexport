@@ -56,16 +56,17 @@ class ExcelExport(BaseExport):
     def _format_render(self, render):
         """Common formatting
         """
-        if isinstance(render, unicode):
+        if isinstance(render, Message):
+            render = translate(render, context=self.request)
+        elif isinstance(render, unicode):
             return render
         elif isinstance(render, str):
             render = safe_unicode(render)
-        elif isinstance(render, Message):
-            render = translate(render, context=self.request)
         elif isinstance(render, DateTime):
             try:
                 render = unicode(render.strftime("%Y/%m/%d"))
             except ValueError:
+                # when date < 1900
                 render = unicode(render)
 
         return render

@@ -21,6 +21,7 @@ class ExportUrl(object):
             try:
                 widgetclass = criteria.widget(cid=param)
             except KeyError:
+                # if widget has been removed
                 continue
             widget = widgetclass(self.context, self.request, criteria.get(param))
             if widget.widget_type == 'resultsperpage':
