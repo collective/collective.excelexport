@@ -5,6 +5,9 @@ Changelog
 1.8 (unreleased)
 ----------------
 
+- Fix error when referenced object value has no Title method.
+  [thomasdesvenain]
+
 - Fix: Don't ommit fields that are in the default fieldset if there is one
   [petchesi-iulian]
 

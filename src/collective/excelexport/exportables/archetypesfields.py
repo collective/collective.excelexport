@@ -196,4 +196,7 @@ class ReferenceFieldRenderer(BaseFieldRenderer):
             return self.render_collection_entry(obj, value)
 
     def render_collection_entry(self, obj, value):
-        return safe_unicode(value.Title()) if value else u""
+        try:
+            return safe_unicode(value.Title()) if value else u""
+        except AttributeError:
+            return value.id
