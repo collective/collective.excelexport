@@ -18,7 +18,11 @@ class ExportUrl(object):
 
         criteria = ICriteria(self.context)
         for param in params.keys():
-            widgetclass = criteria.widget(cid=param)
+            try:
+                widgetclass = criteria.widget(cid=param)
+            except KeyError:
+                # if widget has been removed
+                continue
             widget = widgetclass(self.context, self.request, criteria.get(param))
             if widget.widget_type == 'resultsperpage':
                 del params[param]

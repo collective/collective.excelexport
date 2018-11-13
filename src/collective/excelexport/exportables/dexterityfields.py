@@ -15,6 +15,8 @@ from zope.schema.interfaces import IContextSourceBinder
 
 from z3c.form.interfaces import NO_VALUE
 
+from plone.supermodel.interfaces import FIELDSETS_KEY
+from Products.CMFPlone.utils import safe_unicode
 from plone.app.textfield.interfaces import IRichText
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.behavior.interfaces import IBehavior
@@ -26,9 +28,6 @@ from plone import api
 
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.exportables.base import BaseExportableFactory
-from plone.supermodel.interfaces import FIELDSETS_KEY
-
-from Products.CMFPlone.utils import safe_unicode
 
 
 class FieldWrapper(object):
@@ -315,6 +314,8 @@ class CollectionFieldRenderer(BaseFieldRenderer):
 class TextFieldRenderer(BaseFieldRenderer):
     adapts(IText, Interface, Interface)
 
+    truncate_at = 47
+
     def _get_text(self, value):
         return value
 
@@ -326,8 +327,8 @@ class TextFieldRenderer(BaseFieldRenderer):
             return ""
 
         text = safe_unicode(self._get_text(value))
-        if len(text) > 50:
-            return text[:47] + u"..."
+        if len(text) > self.truncate_at + 3:
+            return text[:self.truncate_at] + u"..."
 
         return text
 

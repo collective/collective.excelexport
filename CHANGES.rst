@@ -5,8 +5,14 @@ Changelog
 1.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix error on eea.faceted when there is a widget operator.
+  [thomasdesvenain]
 
+- Archetypes support,
+  Products.ATExtensions support (RecordField, RecordsField, FormattableNamesField).
+  [thomasdesvenain]
+
+- Fix encoding issue.
 
 1.7 (2018-06-22)
 ----------------
