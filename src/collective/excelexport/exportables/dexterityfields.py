@@ -306,6 +306,8 @@ class CollectionFieldRenderer(BaseFieldRenderer):
 class TextFieldRenderer(BaseFieldRenderer):
     adapts(IText, Interface, Interface)
 
+    truncate_at = 47
+
     def _get_text(self, value):
         return value
 
@@ -317,8 +319,8 @@ class TextFieldRenderer(BaseFieldRenderer):
             return ""
 
         text = safe_unicode(self._get_text(value))
-        if len(text) > 50:
-            return text[:47] + u"..."
+        if len(text) > self.truncate_at + 3:
+            return text[:self.truncate_at] + u"..."
 
         return text
 
