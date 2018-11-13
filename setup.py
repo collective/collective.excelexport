@@ -6,15 +6,11 @@ from setuptools import setup
 
 
 long_description = (
-    open('README.rst').read()
-    + '\n' +
+    open('README.rst').read() + '\n' +
     'Contributors\n'
-    '============\n'
-    + '\n' +
-    open('CONTRIBUTORS.rst').read()
-    + '\n' +
-    open('CHANGES.rst').read()
-    + '\n')
+    '============\n' + '\n' +
+    open('CONTRIBUTORS.rst').read() + '\n\n' +
+    open('CHANGES.rst').read() + '\n')
 
 
 setup(
@@ -27,6 +23,8 @@ setup(
         "Environment :: Web Environment",
         "Framework :: Plone",
         "Framework :: Plone :: 4.3",
+        "Framework :: Plone :: 5.0",
+        "Framework :: Plone :: 5.1",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
     ],
@@ -41,6 +39,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
+        'Plone',
         'plone.api',
         'setuptools',
         'xlwt',

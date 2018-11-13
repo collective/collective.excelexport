@@ -11,7 +11,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from Products.Five.browser import BrowserView
-
+from Products.CMFPlone.utils import safe_unicode
 from collective.excelexport.interfaces import IDataSource, IStyles
 
 
@@ -42,7 +42,6 @@ class BaseExport(BrowserView):
                                      interface=IDataSource, name=policy)
         self.set_headers(datasource)
         sheetsinfo = datasource.get_sheets_data()
-
         string_buffer = self.get_data_buffer(sheetsinfo, policy=policy)
         return string_buffer.getvalue()
 
@@ -59,10 +58,16 @@ class ExcelExport(BaseExport):
         """
         if isinstance(render, Message):
             render = translate(render, context=self.request)
+        elif isinstance(render, unicode):
+            return render
         elif isinstance(render, str):
-            render = unicode(render)
+            render = safe_unicode(render)
         elif isinstance(render, DateTime):
-            render = unicode(render.strftime("%Y/%m/%d"))
+            try:
+                render = unicode(render.strftime("%Y/%m/%d"))
+            except ValueError:
+                # when date < 1900
+                render = unicode(render)
 
         return render
 
@@ -70,9 +75,11 @@ class ExcelExport(BaseExport):
         # values
         for rownum, obj in enumerate(sheetinfo['objects']):
             for exportablenum, exportable in enumerate(sheetinfo['exportables']):
-                bound_obj = obj
-                if hasattr(exportable, 'field'):
+                try:
+                    # dexterity
                     bound_obj = exportable.field.bind(obj).context
+                except AttributeError:
+                    bound_obj = obj
 
                 style = exportable.render_style(
                     bound_obj, copy(styles.content))

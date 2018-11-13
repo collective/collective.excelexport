@@ -8,6 +8,15 @@ Changelog
 - Fix: Don't ommit fields that are in the default fieldset if there is one
   [petchesi-iulian]
 
+- Fix error on eea.faceted when there is a widget operator.
+  [thomasdesvenain]
+
+- Archetypes support,
+  Products.ATExtensions support (RecordField, RecordsField, FormattableNamesField).
+  [thomasdesvenain]
+
+- Fix encoding issue.
+
 1.7 (2018-06-22)
 ----------------
 

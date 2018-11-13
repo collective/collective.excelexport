@@ -1,5 +1,15 @@
-from zope.interface import implements
 from collective.excelexport.interfaces import IExportableFactory
+
+from zope.interface import implements, Interface
+
+
+class IFieldValueGetter(Interface):
+    """Adapter to get a value from fieldname
+    """
+
+    def get(self, fieldname):
+        """Get value from fieldname
+        """
 
 
 class BaseExportableFactory(object):
