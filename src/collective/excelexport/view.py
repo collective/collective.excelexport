@@ -64,10 +64,10 @@ class ExcelExport(BaseExport):
             render = safe_unicode(render)
         elif isinstance(render, DateTime):
             try:
-                render = unicode(render.strftime("%Y/%m/%d"))
+                render = safe_unicode(render.strftime("%Y/%m/%d"))
             except ValueError:
                 # when date < 1900
-                render = unicode(render)
+                render = safe_unicode(render)
 
         return render
 
@@ -151,7 +151,7 @@ class CSVExport(BaseExport):
         elif isinstance(render, Message):
             render = translate(render, context=self.request)
         elif not isinstance(render, unicode):
-            render = unicode(render)
+            render = safe_unicode(render, encoding=self.site_encoding)
 
         try:
             return render.encode(encoding=self.encoding)
