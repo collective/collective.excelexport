@@ -5,6 +5,9 @@ Changelog
 1.8 (unreleased)
 ----------------
 
+- Fix: Don't ommit fields that are in the default fieldset if there is one
+  [petchesi-iulian]
+
 - Fix error on eea.faceted when there is a widget operator.
   [thomasdesvenain]
 
