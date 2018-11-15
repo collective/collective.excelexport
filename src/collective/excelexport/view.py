@@ -151,7 +151,7 @@ class CSVExport(BaseExport):
         elif isinstance(render, Message):
             render = translate(render, context=self.request)
         elif not isinstance(render, unicode):
-            render = safe_unicode(render, encoding=self.site_encoding)
+            render = safe_unicode(render)
 
         try:
             return render.encode(encoding=self.encoding)
