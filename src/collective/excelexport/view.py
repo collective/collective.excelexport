@@ -17,6 +17,26 @@ from collective.excelexport.interfaces import IDataSource, IStyles
 
 class BaseExport(BrowserView):
 
+    def _format_render(self, render):
+        """Common formatting to unicode
+        """
+        if render is None:
+            render = u""
+        elif isinstance(render, Message):
+            render = translate(render, context=self.request)
+        elif isinstance(render, str):
+            render = safe_unicode(render)
+        elif isinstance(render, DateTime):
+            try:
+                render = safe_unicode(render.strftime("%Y/%m/%d"))
+            except ValueError:
+                # when date < 1900
+                render = safe_unicode(render)
+        elif not isinstance(render, unicode):
+            render = safe_unicode(render)
+
+        return render
+
     def set_headers(self, datasource):
         self.request.response.setHeader('Cache-Control', 'no-cache')
         self.request.response.setHeader('Pragma', 'no-cache')
@@ -52,24 +72,6 @@ class ExcelExport(BaseExport):
     mimetype = 'application/vnd.ms-excel'
     extension = 'xls'
     encoding = 'windows-1252'
-
-    def _format_render(self, render):
-        """Common formatting
-        """
-        if isinstance(render, Message):
-            render = translate(render, context=self.request)
-        elif isinstance(render, unicode):
-            return render
-        elif isinstance(render, str):
-            render = safe_unicode(render)
-        elif isinstance(render, DateTime):
-            try:
-                render = safe_unicode(render.strftime("%Y/%m/%d"))
-            except ValueError:
-                # when date < 1900
-                render = safe_unicode(render)
-
-        return render
 
     def write_sheet(self, sheet, sheetinfo, styles):
         # values
@@ -144,14 +146,7 @@ class CSVExport(BaseExport):
     encoding = 'windows-1252'
 
     def _format_render(self, render):
-        """Common formatting
-        """
-        if render is None:
-            render = u""
-        elif isinstance(render, Message):
-            render = translate(render, context=self.request)
-        elif not isinstance(render, unicode):
-            render = safe_unicode(render)
+        render = super(CSVExport, self)._format_render(render)
 
         try:
             return render.encode(encoding=self.encoding)
