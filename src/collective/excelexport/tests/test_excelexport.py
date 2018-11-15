@@ -95,12 +95,12 @@ ce sera moi.""",
         row1 = sheet.row_values(1)
         self.assertEqual(row1, [u'John Doe',
                                 u'Longtemps, je me suis couch\xe9 de bonne heure',
-                                29426.0, u'silver', 100.0, u'English\nFran\xe7ais',
+                                u'1980/07/24', u'silver', '100', u'English\nFran\xe7ais',
                                 u'logoplone.png', u''])
         row2 = sheet.row_values(2)
         self.assertEqual(row2, [u'John Smith',
                                 u"Je forme une entreprise qui n'eut jamais d'exem...",
-                                29791.0, u'', 100.0,
+                                u'1981/07/24', u'', '100',
                                 u'English\nEspa\xf1ol', u'', u'John Doe'])
         os.remove(generated_path)
         sheet2 = sheets.sheet_by_name(u'member 2')
@@ -118,12 +118,12 @@ ce sera moi.""",
         row1 = lines.next()
         self.assertEqual(row1, ['John Doe',
                                 'Longtemps, je me suis couch\xe9 de bonne heure',
-                                '1980-07-24', 'silver', '100',
+                                '1980/07/24', 'silver', '100',
                                 'English\nFran\xe7ais', 'logoplone.png', ''])
         row2 = lines.next()
         self.assertEqual(row2, ['John Smith',
                                 "Je forme une entreprise qui n'eut jamais d'exem...",
-                                '1981-07-24', '', '100',
+                                '1981/07/24', '', '100',
                                 'English\nEspa\xf1ol', '', 'John Doe'])
         os.remove(generated_path)
 
@@ -144,7 +144,7 @@ ce sera moi.""",
         row1 = sheet.row_values(1)
         self.assertEqual(row1, [u'John Doe',
                                 u'Longtemps, je me suis couch\xe9 de bonne heure',
-                                29426.0, u'silver', 100.0,
+                                u'1980/07/24', u'silver', u'100',
                                 u'English\nFran\xe7ais',
                                 u'logoplone.png', u''])
         with self.assertRaises(IndexError):

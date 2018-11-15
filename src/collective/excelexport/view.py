@@ -13,6 +13,7 @@ from zope.i18nmessageid.message import Message
 from Products.Five.browser import BrowserView
 from Products.CMFPlone.utils import safe_unicode
 from collective.excelexport.interfaces import IDataSource, IStyles
+import datetime
 
 
 class BaseExport(BrowserView):
@@ -20,20 +21,24 @@ class BaseExport(BrowserView):
     def _format_render(self, render):
         """Common formatting to unicode
         """
-        if render is None:
-            render = u""
-        elif isinstance(render, Message):
+        if isinstance(render, Message):
             render = translate(render, context=self.request)
+        elif isinstance(render, unicode):
+            pass
+        elif render is None:
+            render = u""
         elif isinstance(render, str):
             render = safe_unicode(render)
-        elif isinstance(render, DateTime):
+        elif isinstance(render, datetime.datetime):
+            render = safe_unicode(render.strftime("%Y/%m/%d %H:%M"))
+        elif isinstance(render, (DateTime, datetime.date)):
             try:
                 render = safe_unicode(render.strftime("%Y/%m/%d"))
             except ValueError:
                 # when date < 1900
                 render = safe_unicode(render)
         elif not isinstance(render, unicode):
-            render = safe_unicode(render)
+            render = safe_unicode(str(render))
 
         return render
 
@@ -147,7 +152,6 @@ class CSVExport(BaseExport):
 
     def _format_render(self, render):
         render = super(CSVExport, self)._format_render(render)
-
         try:
             return render.encode(encoding=self.encoding)
         except UnicodeEncodeError:

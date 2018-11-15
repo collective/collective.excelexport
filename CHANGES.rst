@@ -5,6 +5,9 @@ Changelog
 1.8 (unreleased)
 ----------------
 
+- Dexterity date / datetime field rendering.
+  [thomasdesvenain]
+
 - Fix error when referenced object value has no Title method.
   [thomasdesvenain]
 

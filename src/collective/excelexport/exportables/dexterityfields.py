@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_base
 from zope.interface import Interface
-from zope.schema.interfaces import IField, IDate, ICollection,\
-    IVocabularyFactory, IBool, IText
+from zope.schema.interfaces import IField, IDate, ICollection, \
+    IVocabularyFactory, IBool, IText, IDatetime
 from zope.schema import getFieldsInOrder
 from zope.component import adapts
 from zope.component import getMultiAdapter
@@ -239,8 +239,37 @@ class BooleanFieldRenderer(BaseFieldRenderer):
 class DateFieldRenderer(BaseFieldRenderer):
     adapts(IDate, Interface, Interface)
 
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        if value == NO_VALUE or not value:
+            return None
+        else:
+            return value.strftime("%Y/%m/%d")
+
     def render_collection_entry(self, obj, value):
+        if not value:
+            return u""
         return value.strftime("%Y/%m/%d")
+
+    def render_style(self, obj, base_style):
+        base_style.num_format_str = 'yyyy/mm/dd'
+        return base_style
+
+
+class DateTimeFieldRenderer(BaseFieldRenderer):
+    adapts(IDatetime, Interface, Interface)
+
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        if value == NO_VALUE or not value:
+            return None
+        else:
+            return value.strftime("%Y/%m/%d %H:%M")
+
+    def render_collection_entry(self, obj, value):
+        if not value:
+            return u""
+        return value.strftime("%Y/%m/%d %H:%M")
 
     def render_style(self, obj, base_style):
         base_style.num_format_str = 'yyyy/mm/dd'
