@@ -44,6 +44,6 @@ class RecordsFieldRenderer(RecordFieldRenderer):
         subfields = self.field.getSubfields()
         render = []
         for v in value:
-            render.append(self.render_record(v), subfields)
+            render.append(self.render_record(v, subfields))
 
         return u", ".join(render)
