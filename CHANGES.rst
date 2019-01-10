@@ -5,8 +5,11 @@ Changelog
 1.8 (unreleased)
 ----------------
 
-- Dexterity date / datetime field rendering.
-  [thomasdesvenain]
+# BREAKING CHANGES
+
+CONFIGURATION_FIELDS constant has been removed, we now use a registry record: collective.excelexport.excluded_exportables
+
+# CHANGES
 
 - Fix error when referenced object value has no Title method.
   [thomasdesvenain]

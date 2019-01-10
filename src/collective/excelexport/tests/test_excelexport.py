@@ -195,6 +195,20 @@ ce sera moi.""",
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 4)
 
+    def test_default_excluded_exportables_record(self):
+        api.portal.set_registry_record(name='collective.excelexport.excluded_exportables', value=[])
+        source = FolderContentsDataSource(self.portal.container,
+                                        self.portal.REQUEST)
+        data = source.get_sheets_data()
+        self.assertEqual(len(data[0]['exportables']), 8)
+
+        api.portal.set_registry_record(name='collective.excelexport.excluded_exportables', value=[u'title'])
+
+        source = FolderContentsDataSource(self.portal.container,
+                                        self.portal.REQUEST)
+        data = source.get_sheets_data()
+        self.assertEqual(len(data[0]['exportables']), 7)
+
     def test_order_exportables(self):
 
         class TestContentsDataSource(FolderContentsDataSource):

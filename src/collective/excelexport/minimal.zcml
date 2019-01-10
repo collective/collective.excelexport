@@ -48,4 +48,6 @@
              provides=".interfaces.IStyles"
               />
 
+    <include file="upgrades.zcml" />
+
 </configure>
