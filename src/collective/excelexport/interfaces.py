@@ -50,7 +50,8 @@ class IExportableFactory(Interface):
     we can restrict an exportable factory on few portal types or behaviors
     """
     portal_types = Attribute("""list: portal_types on wich this factory applies""")
-    behaviors = Attribute("""list of interfaces: if set, the factory applies on types implementing one of those behaviors""")
+    behaviors = Attribute(
+        """list of interfaces: if set, the factory applies on types implementing one of those behaviors""")
     weight = Attribute("""Weight for order (the lower, the first)""")
 
     def get_exportables(self):

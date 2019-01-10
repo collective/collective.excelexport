@@ -1,7 +1,8 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_get
 from Products.ATContentTypes.interfaces import IATContentType
-from Products.Archetypes.interfaces import IField, IFileField, IBooleanField, IDateTimeField, ITextField, ILinesField, IReferenceField
+from Products.Archetypes.interfaces import IField, IFileField, IBooleanField, IDateTimeField, ITextField, ILinesField, \
+    IReferenceField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.interfaces import IDynamicViewTypeInformation
 from Products.CMFPlone.utils import safe_unicode

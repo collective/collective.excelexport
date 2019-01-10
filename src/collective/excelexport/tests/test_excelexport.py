@@ -5,18 +5,17 @@ import os
 import tempfile
 from csv import reader as csvreader
 
+from plone.app.testing.helpers import login
+from plone.app.testing.interfaces import TEST_USER_NAME
+
 from collective.excelexport.datasources.base import BaseContentsDataSource
+from collective.excelexport.datasources.folder import FolderContentsDataSource
+from collective.excelexport.testing import IntegrationTestCase
+from plone import api
+from plone.namedfile.file import NamedImage
+from z3c.relationfield.relation import RelationValue
 from zope.component import getUtility
 from zope.intid.interfaces import IIntIds
-from z3c.relationfield.relation import RelationValue
-
-from plone import api
-from plone.app.testing.interfaces import TEST_USER_NAME
-from plone.namedfile.file import NamedImage
-from plone.app.testing.helpers import login
-
-from collective.excelexport.testing import IntegrationTestCase
-from collective.excelexport.datasources.folder import FolderContentsDataSource
 
 TEST_IMAGE = os.path.join(os.path.dirname(__file__), 'logoplone.png')
 
@@ -47,20 +46,20 @@ class TestExcelExport(IntegrationTestCase):
                                            languages=('en', 'fr'),
                                            biography=u"Longtemps, je me suis couché de bonne heure",
                                            photo=NamedImage(open(TEST_IMAGE).read(),
-                                                  contentType='image/png',
-                                                  filename=u'logoplone.png'),
+                                                            contentType='image/png',
+                                                            filename=u'logoplone.png'),
                                            )
         self.content2 = api.content.create(container, type='member', id='johnsmith',
-                                          title="John Smith",
-                                          birth_date=datetime.date(1981, 07, 24),
-                                          amount=100,
-                                          languages=('en', 'es'),
-                                          photo=None,
-                                          biography=u"""Je forme une entreprise qui n'eut jamais d'exemple
+                                           title="John Smith",
+                                           birth_date=datetime.date(1981, 07, 24),
+                                           amount=100,
+                                           languages=('en', 'es'),
+                                           photo=None,
+                                           biography=u"""Je forme une entreprise qui n'eut jamais d'exemple
 et dont l’exécution n'aura point d’imitateur.
 Je veux montrer à mes semblables un homme dans toute la vérité de la nature ; et cet homme
 ce sera moi.""",
-                                          relatedItems=[RelationValue(intids.getId(self.content1))])
+                                           relatedItems=[RelationValue(intids.getId(self.content1))])
 
     def test_product_installed(self):
         """Test if collective.excelexport is installed with portal_quickinstaller."""
@@ -164,7 +163,7 @@ ce sera moi.""",
 
     def test_filter_factories(self):
         source = FolderContentsDataSource(self.portal.container,
-                                        self.portal.REQUEST)
+                                          self.portal.REQUEST)
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 8)
 
@@ -182,7 +181,6 @@ ce sera moi.""",
         self.assertEqual(len(data[0]['exportables']), 7)
 
         class TestContentsDataSource2(FolderContentsDataSource):
-
             excluded_exportables = [
                 'biography',
                 'birth_date',
@@ -198,19 +196,18 @@ ce sera moi.""",
     def test_default_excluded_exportables_record(self):
         api.portal.set_registry_record(name='collective.excelexport.excluded_exportables', value=[])
         source = FolderContentsDataSource(self.portal.container,
-                                        self.portal.REQUEST)
+                                          self.portal.REQUEST)
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 8)
 
         api.portal.set_registry_record(name='collective.excelexport.excluded_exportables', value=[u'title'])
 
         source = FolderContentsDataSource(self.portal.container,
-                                        self.portal.REQUEST)
+                                          self.portal.REQUEST)
         data = source.get_sheets_data()
         self.assertEqual(len(data[0]['exportables']), 7)
 
     def test_order_exportables(self):
-
         class TestContentsDataSource(FolderContentsDataSource):
             exportables_order = [
                 'biography',
@@ -230,7 +227,6 @@ ce sera moi.""",
         self.assertEqual(exportables[3].field.__name__, 'photo')
 
     def test_order_similar_exportables(self):
-
         class DummyExportable(object):
             pass
 
