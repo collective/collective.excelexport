@@ -11,6 +11,10 @@ CONFIGURATION_FIELDS constant has been removed, we now use a registry record: co
 
 # CHANGES
 
+- Exclude dexterity 'allow discussion' and 'exclude_from_nav' fields
+  (previously, only archetypes fields were excluded)
+  [thomasdesvenain]
+
 - Fix error when referenced object value has no Title method.
   [thomasdesvenain]
 

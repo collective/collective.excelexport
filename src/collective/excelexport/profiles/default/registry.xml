@@ -7,8 +7,10 @@
     </field>
     <value>
       <element>allowDiscussion</element>
+      <element>allow_discussion</element>
       <element>constrainTypesMode</element>
       <element>excludeFromNav</element>
+      <element>exclude_from_nav</element>
       <element>locallyAllowedTypes</element>
       <element>immediatelyAddableTypes</element>
       <element>nextPreviousEnabled</element>
