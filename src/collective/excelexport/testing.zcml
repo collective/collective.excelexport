@@ -3,13 +3,13 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-  <include file="configure.zcml" />
+  <include file="configure.zcml"/>
 
-  <include package="plone.app.dexterity" />
-  <include package="plone.behavior" file="meta.zcml" />
-  <include package="ecreall.helpers.testing" />
-  <include package="plone.app.relationfield" />
-  <include package="collective.z3cform.datagridfield" />
+  <include package="plone.app.dexterity"/>
+  <include package="plone.behavior" file="meta.zcml"/>
+  <include package="ecreall.helpers.testing"/>
+  <include package="plone.app.relationfield"/>
+  <include package="collective.z3cform.datagridfield"/>
 
   <genericsetup:registerProfile
       name="testing"
@@ -17,6 +17,6 @@
       directory="profiles/testing"
       description="Steps to ease tests of collective.excelexport"
       provides="Products.GenericSetup.interfaces.EXTENSION"
-      />
+  />
 
 </configure>

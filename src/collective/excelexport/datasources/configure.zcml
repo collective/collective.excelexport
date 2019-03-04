@@ -1,24 +1,18 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:zcml="http://namespaces.zope.org/zcml"
-    xmlns:five="http://namespaces.zope.org/five"
-    xmlns:grok="http://namespaces.zope.org/grok"
-    xmlns:i18n="http://namespaces.zope.org/i18n"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
+  <adapter factory=".folder.FolderContentsDataSource"
+           provides="collective.excelexport.interfaces.IDataSource"
+  />
 
-    <adapter factory=".folder.FolderContentsDataSource"
-             provides="collective.excelexport.interfaces.IDataSource"
-              />
+  <adapter factory=".search.SearchContentsDataSource"
+           provides="collective.excelexport.interfaces.IDataSource"
+           name="excelexport.search"
+  />
 
-    <adapter factory=".search.SearchContentsDataSource"
-             provides="collective.excelexport.interfaces.IDataSource"
-             name="excelexport.search"
-              />
-
-    <include package=".eeafaceted"
-             zcml:condition="installed eea.facetednavigation" />
+  <include package=".eeafaceted"
+           zcml:condition="installed eea.facetednavigation"/>
 
 </configure>

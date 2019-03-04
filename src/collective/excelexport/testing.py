@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Base module for unittesting."""
 
+import unittest
 
-from plone import api
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneWithPackageLayer
@@ -13,7 +13,7 @@ from plone.app.testing import setRoles
 
 import collective.excelexport
 import pkg_resources
-import unittest
+from plone import api
 
 try:
     pkg_resources.get_distribution('plone.app.contenttypes')
@@ -58,15 +58,13 @@ FIXTURE = CollectiveExcelexportLayer(
     name="FIXTURE",
 )
 
-
 INTEGRATION = IntegrationTesting(
-    bases=(FIXTURE, ),
+    bases=(FIXTURE,),
     name="INTEGRATION"
 )
 
-
 FUNCTIONAL = FunctionalTesting(
-    bases=(FIXTURE, ),
+    bases=(FIXTURE,),
     name="FUNCTIONAL"
 )
 

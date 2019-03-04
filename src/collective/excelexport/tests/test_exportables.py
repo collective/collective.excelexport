@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 """Setup/installation tests for this package."""
 
-from zope import schema
-from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
-from zope.component import adapts
-from zope.component import getGlobalSiteManager
-from zope.interface import alsoProvides
-from zope.interface import Interface
-from zope.interface.declarations import implements
-
 from collective.excelexport.exportables.dexterityfields import ChoiceFieldRenderer
 from collective.excelexport.exportables.dexterityfields import IFieldValueGetter
 from collective.excelexport.exportables.dexterityfields import get_exportable_for_fieldname
 from collective.excelexport.interfaces import IExportable
 from collective.excelexport.testing import IntegrationTestCase
-
 from plone import api
+from zope import schema
+from zope.component import adapts
+from zope.component import getGlobalSiteManager
+from zope.interface import Interface
+from zope.interface import alsoProvides
+from zope.interface.declarations import implements
+from zope.schema.interfaces import IContextSourceBinder
+from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 
 class IFakeInterface(Interface):
@@ -63,10 +61,12 @@ class TestExportables(IntegrationTestCase):
         field.value = 'sgeulette'
         renderer = ChoiceFieldRenderer(field, self.folder, self.portal.REQUEST)
         self.assertEqual(renderer.render_value(renderer.context), 'Stephan Geulette')
+
         # with source param
 
         def mysource(obj):
             return devs
+
         alsoProvides(mysource, IContextSourceBinder)
         field = schema.Choice(title=u'Test', source=mysource)
         field.value = 'sgeulette'

@@ -19,6 +19,13 @@ Try @@collective.excelexport?excelexport.policy=excelexport.search&review_state=
 Try @@collective.excelexportcsv view on any folder for csv export.
 
 
+How to configure this product
+=============================
+
+You can set a list of fields to be excluded from export via the registry record:
+*collective.excelexport.excluded_exportables*
+
+
 How to extend it
 ================
 

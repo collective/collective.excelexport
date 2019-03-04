@@ -1,19 +1,18 @@
-from csv import writer as csvwriter
-from copy import copy
+import datetime
 from StringIO import StringIO
+from copy import copy
+from csv import writer as csvwriter
 
 import xlwt
-from xlwt import CompoundDoc
-
 from DateTime import DateTime
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser import BrowserView
+from collective.excelexport.interfaces import IDataSource, IStyles
+from xlwt import CompoundDoc
 from zope.component import getMultiAdapter
 from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
-from Products.Five.browser import BrowserView
-from Products.CMFPlone.utils import safe_unicode
-from collective.excelexport.interfaces import IDataSource, IStyles
-import datetime
 
 
 class BaseExport(BrowserView):
@@ -55,7 +54,7 @@ class BaseExport(BrowserView):
         self.request.response.setHeader(
             'Content-disposition',
             'attachment; filename="%s"' % filename
-            )
+        )
 
     def get_data_buffer(self, sheetsinfo, policy=None):
         raise NotImplementedError
@@ -145,7 +144,6 @@ class ExcelExport(BaseExport):
 
 
 class CSVExport(BaseExport):
-
     mimetype = 'text/csv'
     extension = 'csv'
     encoding = 'windows-1252'

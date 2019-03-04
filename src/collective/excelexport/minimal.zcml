@@ -2,50 +2,51 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:five="http://namespaces.zope.org/five"
-    xmlns:grok="http://namespaces.zope.org/grok"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-    <i18n:registerTranslations directory="locales" />
+  <i18n:registerTranslations directory="locales"/>
 
-    <five:registerPackage package="." initialize=".initialize" />
+  <five:registerPackage package="." initialize=".initialize"/>
 
-    <include package="plone.api" />
-    <include package=".datasources" />
+  <include package="plone.api"/>
+  <include package=".datasources"/>
 
-    <include zcml:condition="installed plone.restapi" file="restapi.zcml" />
+  <include zcml:condition="installed plone.restapi" file="restapi.zcml"/>
 
-    <genericsetup:registerProfile
-        name="default"
-        title="collective.excelexport"
-        directory="profiles/default"
-        description="Installs the collective.excelexport add-on."
-        provides="Products.GenericSetup.interfaces.EXTENSION"
-        />
+  <genericsetup:registerProfile
+      name="default"
+      title="collective.excelexport"
+      directory="profiles/default"
+      description="Installs the collective.excelexport add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+  />
 
-    <genericsetup:importStep
-        name="collectiveexcelexport-postInstall"
-        title="collective.excelexport post_install import step"
-        description="Post install import step from collective.excelexport"
-        handler=".setuphandlers.post_install">
-    </genericsetup:importStep>
+  <genericsetup:importStep
+      name="collectiveexcelexport-postInstall"
+      title="collective.excelexport post_install import step"
+      description="Post install import step from collective.excelexport"
+      handler=".setuphandlers.post_install">
+  </genericsetup:importStep>
 
-    <browser:page name="collective.excelexport"
-             for="*"
-             class=".view.ExcelExport"
-             permission="zope2.View"
-             />
+  <browser:page name="collective.excelexport"
+                for="*"
+                class=".view.ExcelExport"
+                permission="zope2.View"
+  />
 
-    <browser:page name="collective.excelexportcsv"
-             for="*"
-             class=".view.CSVExport"
-             permission="zope2.View"
-             />
+  <browser:page name="collective.excelexportcsv"
+                for="*"
+                class=".view.CSVExport"
+                permission="zope2.View"
+  />
 
-    <adapter factory=".styles.Styles"
-             provides=".interfaces.IStyles"
-              />
+  <adapter factory=".styles.Styles"
+           provides=".interfaces.IStyles"
+  />
+
+  <include file="upgrades.zcml"/>
 
 </configure>
