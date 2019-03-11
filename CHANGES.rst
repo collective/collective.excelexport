@@ -11,6 +11,9 @@ CONFIGURATION_FIELDS constant has been removed, we now use a registry record: co
 
 # CHANGES
 
+- Explicit inclusion of plone.restapi zcml
+  [thomasdesvenain]
+
 - Exclude dexterity 'allow discussion' and 'exclude_from_nav' fields
   (previously, only archetypes fields were excluded)
   [thomasdesvenain]
