@@ -314,7 +314,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         voc_value = self._get_vocabulary_value(obj, value)
-        return voc_value and translate(voc_value, context=self.request) or u""
+        return voc_value and translate(safe_unicode(voc_value), context=self.request) or u""
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
