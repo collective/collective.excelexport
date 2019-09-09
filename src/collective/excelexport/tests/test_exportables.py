@@ -68,7 +68,6 @@ class TestExportables(IntegrationTestCase):
         renderer = ChoiceFieldRenderer(field, self.folder, self.portal.REQUEST)
         self.assertEqual(renderer.render_collection_entry(renderer.context, 'Stéphan Geulette'), u'Stéphan Geulette')
 
-
         # with source param
 
         def mysource(obj):
