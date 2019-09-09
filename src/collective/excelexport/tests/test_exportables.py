@@ -61,6 +61,13 @@ class TestExportables(IntegrationTestCase):
         field.value = 'sgeulette'
         renderer = ChoiceFieldRenderer(field, self.folder, self.portal.REQUEST)
         self.assertEqual(renderer.render_value(renderer.context), 'Stephan Geulette')
+        # render_collection_entry with non unicode vocabulary value
+        devs = SimpleVocabulary([SimpleTerm(value=u'sgeulette', title='Stephan Geulette')])
+        field = schema.Choice(title=u'Test', vocabulary=devs)
+        field.value = 'sgeulette'
+        renderer = ChoiceFieldRenderer(field, self.folder, self.portal.REQUEST)
+        self.assertEqual(renderer.render_collection_entry(renderer.context, 'Stéphan Geulette'), u'Stéphan Geulette')
+
 
         # with source param
 
