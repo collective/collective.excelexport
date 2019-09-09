@@ -11,7 +11,7 @@ CONFIGURATION_FIELDS constant has been removed, we now use a registry record: co
 
 # CHANGES
 
-- Safely decode voc_value (fix encoding issue)
+- Safely decode voc_value (fix encoding issue) + test
   [boulch]
 
 - Explicit inclusion of plone.restapi zcml
