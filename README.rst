@@ -1,3 +1,10 @@
+.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
+    :target: http://travis-ci.org/collective/collective.excelexport
+
+.. image:: https://coveralls.io/repos/collective/collective.excelexport/badge.png?branch=master
+    :target: https://coveralls.io/r/collective/collective.excelexport?branch=master
+
+
 ======================
 collective.excelexport
 ======================
@@ -135,14 +142,3 @@ plone.restapi
 
 To get an export via rest api, query @collective.excelexport / @collective.excelexportcsv (with one @)
 
-
-Tests
-=====
-
-This add-on is tested using Travis CI. The current status of the add-on is :
-
-.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
-    :target: http://travis-ci.org/collective/collective.excelexport
-
-.. image:: https://coveralls.io/repos/collective/collective.excelexport/badge.png?branch=master
-    :target: https://coveralls.io/r/collective/collective.excelexport?branch=master
