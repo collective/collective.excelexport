@@ -277,35 +277,35 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
     adapts(IChoice, Interface, Interface)
 
     def _get_vocabulary_value(self, obj, value):
-        if not value:
-            return value
+        res = value
+        if res:
+            vocabulary = self.field.vocabulary
+            # for source vocabulary
+            if IContextSourceBinder.providedBy(vocabulary):
+                vocabulary = vocabulary(obj)
+            # for named vocabulary
+            if not vocabulary:
+                vocabularyName = self.field.vocabularyName
+                if vocabularyName:
+                    vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
 
-        vocabulary = self.field.vocabulary
-        # for source vocabulary
-        if IContextSourceBinder.providedBy(vocabulary):
-            vocabulary = vocabulary(obj)
-        # for named vocabulary
-        if not vocabulary:
-            vocabularyName = self.field.vocabularyName
-            if vocabularyName:
-                vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
-
-        if vocabulary:
-            try:
-                term = vocabulary.getTermByToken(value)
-            except LookupError:
-                term = None
-        else:
-            term = None
-
-        if term:
-            title = term.title
-            if not title:
-                return value
+            if vocabulary:
+                try:
+                    term = vocabulary.getTermByToken(value)
+                except LookupError:
+                    term = None
             else:
-                return title
-        else:
-            return value
+                term = None
+
+            if term:
+                title = term.title
+                if not title:
+                    res = value
+                else:
+                    res = title
+            else:
+                res = value
+        return safe_unicode(res)
 
     def render_value(self, obj):
         value = self.get_value(obj)
