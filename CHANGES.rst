@@ -5,7 +5,8 @@ Changelog
 1.9 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Safely decode voc_value (fix encoding issue) + test
+  [boulch]
 
 
 1.8 (2019-09-12)
@@ -16,9 +17,6 @@ Changelog
 CONFIGURATION_FIELDS constant has been removed, we now use a registry record: collective.excelexport.excluded_exportables
 
 # CHANGES
-
-- Safely decode voc_value (fix encoding issue) + test
-  [boulch]
 
 - Explicit inclusion of plone.restapi zcml
   [thomasdesvenain]
