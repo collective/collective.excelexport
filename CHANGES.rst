@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-1.9 (unreleased)
-----------------
+1.8.1 (2019-11-06)
+------------------
 
 - Safely decode voc_value (fix encoding issue) + test
   [boulch]
