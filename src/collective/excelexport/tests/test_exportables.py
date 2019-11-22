@@ -12,7 +12,7 @@ from zope.component import adapts
 from zope.component import getGlobalSiteManager
 from zope.interface import Interface
 from zope.interface import alsoProvides
-from zope.interface.declarations import implements
+from zope.interface.declarations import implementer
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
@@ -21,9 +21,9 @@ class IFakeInterface(Interface):
     """ Fake interface """
 
 
+@implementer(IFieldValueGetter)
 class FakeValueGetter(object):
     adapts(IFakeInterface)
-    implements(IFieldValueGetter)
 
     def __init__(self, context):
         self.context = context

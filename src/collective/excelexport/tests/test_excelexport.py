@@ -51,7 +51,7 @@ class TestExcelExport(IntegrationTestCase):
                                            )
         self.content2 = api.content.create(container, type='member', id='johnsmith',
                                            title="John Smith",
-                                           birth_date=datetime.date(1981, 07, 24),
+                                           birth_date=datetime.date(1981, 7, 24),
                                            amount=100,
                                            languages=('en', 'es'),
                                            photo=None,

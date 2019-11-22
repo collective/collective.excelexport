@@ -1,6 +1,6 @@
 from collective.excelexport.interfaces import IExportableFactory
 
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 
 
 class IFieldValueGetter(Interface):
@@ -12,9 +12,8 @@ class IFieldValueGetter(Interface):
         """
 
 
+@implementer(IExportableFactory)
 class BaseExportableFactory(object):
-    implements(IExportableFactory)
-
     portal_types = None
     behaviors = None
     weight = 1000

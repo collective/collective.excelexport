@@ -1,15 +1,15 @@
 import xlwt
 from collective.excelexport.interfaces import IStyles
 from zope.component import adapts
-from zope.interface import implements, Interface
+from zope.interface import implementer, Interface
 
 
+@implementer(IStyles)
 class Styles(object):
 
     def __init__(self, context, request):
         pass
 
-    implements(IStyles)
     adapts(Interface, Interface)
 
     content = xlwt.easyxf(

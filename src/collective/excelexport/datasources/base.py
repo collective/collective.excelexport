@@ -6,7 +6,7 @@ from plone import api
 from plone.behavior.interfaces import IBehavior
 from zope.component import getAdapters
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 
 
 def get_name(column):
@@ -28,6 +28,7 @@ _CONFIGURATION_FIELDS = [
 ]
 
 
+@implementer(IDataSource)
 class BaseContentsDataSource(object):
     """
     Base class for a datasource that exports contents
@@ -36,7 +37,6 @@ class BaseContentsDataSource(object):
 
     group them by portal type (one sheet by portal type)
     """
-    implements(IDataSource)
     excluded_factories = None
     excluded_exportables = None
     exportables_order = None  # use this to specify exportables order using field names

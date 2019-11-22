@@ -16,11 +16,11 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface import Interface
-from zope.interface.declarations import implements
+from zope.interface.declarations import implementer
 
 
+@implementer(IExportable)
 class BaseFieldRenderer(object):
-    implements(IExportable)
 
     def __init__(self, field, context, request):
         self.field = field
@@ -96,9 +96,9 @@ class ArchetypesFieldsExportableFactory(BaseExportableFactory):
         return exportables
 
 
+@implementer(IFieldValueGetter)
 class ArchetypesValueGetter(object):
     adapts(IATContentType)
-    implements(IFieldValueGetter)
 
     def __init__(self, context):
         self.context = context

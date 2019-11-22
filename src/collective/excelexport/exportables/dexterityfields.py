@@ -20,7 +20,7 @@ from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface import Interface
-from zope.interface.declarations import implements
+from zope.interface.declarations import implementer
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.interfaces import IField, IDate, ICollection, \
@@ -152,9 +152,9 @@ class IFieldValueGetter(Interface):
         """
 
 
+@implementer(IFieldValueGetter)
 class DexterityValueGetter(object):
     adapts(IDexterityContent)
-    implements(IFieldValueGetter)
 
     def __init__(self, context):
         self.context = context
@@ -166,8 +166,8 @@ class DexterityValueGetter(object):
         return value
 
 
+@implementer(IExportable)
 class BaseFieldRenderer(object):
-    implements(IExportable)
 
     def __init__(self, field, context, request):
         self.field = field

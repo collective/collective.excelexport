@@ -18,3 +18,5 @@ var/
 .coverage
 htmlcov/
 *~
+local/
+.idea/
