@@ -95,7 +95,6 @@ def get_ordered_fields(fti):
     ordered_fields = []
     for fieldset in ordered_fieldsets:
         ordered_fields.extend(fieldset_fields[fieldset])
-
     fields.sort(key=lambda field: ordered_fields.index(field[0]))
     return fields
 
@@ -155,12 +154,17 @@ class IFieldValueGetter(Interface):
 class DexterityValueGetter(object):
     adapts(IDexterityContent)
     implements(IFieldValueGetter)
+    field_mapping = {
+        'subjects': 'subject'
+    }
 
     def __init__(self, context):
         self.context = context
 
     def get(self, field):
-        value = getattr(aq_base(self.context), field.__name__, None)
+        value = getattr(aq_base(self.context),
+                        self.field_mapping.get(field.__name__, field.__name__),
+                        None)
         if hasattr(value, '__call__'):
             value = value()
         return value

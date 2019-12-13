@@ -5,7 +5,10 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- We can map field name with object attribute.
+  subjects is mapped with subject.
+  This fixes export of subject field with dexterity behavior
+  [thomasdesvenain]
 
 
 1.8.1 (2019-11-06)
