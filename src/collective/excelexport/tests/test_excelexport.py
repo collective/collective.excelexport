@@ -257,3 +257,24 @@ ce sera moi.""",
         self.assertEqual(exportables[2].__class__, DummyExportable2)
         self.assertEqual(exportables[3].__class__, DummyExportable2)
         self.assertEqual(exportables[4].__class__, DummyExportable3)
+
+    def test_ObjectFieldRenderer_render_multi_values(self):
+
+        self.content = api.content.create(self.portal.container,
+                                          type='complex',
+                                          title="Test title",
+                                          object_field=['Field1 value', 'Field2 value'])
+
+        import xlrd
+        output = self.portal.container.unrestrictedTraverse('@@collective.excelexport')()
+        generated_path = self._get_generated_filepath(output, 'test.xls')
+        sheets = xlrd.open_workbook(generated_path)
+        sheet = sheets.sheet_by_name(u'complex')
+        row0 = sheet.row_values(0)
+        self.assertEqual(row0, [u'Title',
+                                u'Address - Field 1',
+                                u'Address - Filed 2'])
+        row1 = sheet.row_values(1)
+        self.assertEqual(row1, [u'Test title',
+                                u'Field 1 value',
+                                u'Filed 2 value'])
