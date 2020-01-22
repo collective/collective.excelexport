@@ -4,15 +4,21 @@ from Products.CMFPlone.utils import safe_unicode
 from collective.excelexport.exportables.base import BaseExportableFactory
 from collective.excelexport.interfaces import IExportable
 from plone import api
+from plone.app.textfield import RichText
 from plone.app.textfield.interfaces import IRichText
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.behavior.interfaces import IBehavior
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.interfaces import IDexterityFTI
+from plone.namedfile.field import NamedBlobFile
+from plone.namedfile.field import NamedBlobImage
+from plone.namedfile.field import NamedFile
+from plone.namedfile.field import NamedImage
 from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
 from plone.supermodel.interfaces import FIELDSETS_KEY
 from z3c.form.interfaces import NO_VALUE
+from zope import schema
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -31,6 +37,14 @@ from zope.schema.interfaces import (
     IBool,
     IText,
     IDatetime,
+)
+
+excluded_object_fields = (
+    NamedBlobFile,
+    NamedBlobImage,
+    NamedFile,
+    NamedImage,
+    RichText,
 )
 
 
@@ -101,20 +115,44 @@ def get_ordered_fields(fti):
         ordered_fields.extend(fieldset_fields[fieldset])
 
     fields.sort(key=lambda field: ordered_fields.index(field[0]))
+    fields = extend_object_fields(fields)
+
     return fields
+
+
+def extend_object_fields(fields):
+    new_fields = []
+    for key, field in fields:
+        if isinstance(field, schema.Object) and not isinstance(
+            field, excluded_object_fields
+        ):
+            for f_key, subfield in getFieldsInOrder(field.schema):
+                new_fields.append(((key, f_key), (field, subfield)))
+        else:
+            new_fields.append((key, field))
+    return new_fields
 
 
 def get_exportable(field, context, request):
     """Get exportable from dexterity field, context and request
     """
+    if isinstance(field, tuple):
+        parent_field, field = field
+        field_name = "{0}.{1}".format(parent_field.__name__, field.__name__)
+    else:
+        parent_field = None
+        field_name = field.__name__
     try:
         # check if there is a specific adapter for the field name
         exportable = getMultiAdapter(
-            (field, context, request), interface=IExportable, name=field.__name__
+            (field, context, request), interface=IExportable, name=field_name
         )
     except ComponentLookupError:
         # get the generic adapter for the field
         exportable = getMultiAdapter((field, context, request), interface=IExportable)
+
+    if parent_field is not None:
+        exportable.define_parent(parent_field)
 
     return exportable
 
@@ -174,12 +212,20 @@ class BaseFieldRenderer(object):
         self.field = field
         self.context = context
         self.request = request
+        self.parent_field = None
 
     def __repr__(self):
         return "<%s - %s>" % (self.__class__.__name__, self.field.__name__)
 
     def get_value(self, obj):
+        if self.parent_field is not None:
+            return getattr(
+                IFieldValueGetter(obj).get(self.parent_field), self.field.__name__, None
+            )
         return IFieldValueGetter(obj).get(self.field)
+
+    def define_parent(self, parent_field):
+        self.parent_field = parent_field
 
     def _translate(self, value):
         if isinstance(value, Message):
@@ -188,6 +234,11 @@ class BaseFieldRenderer(object):
         return value
 
     def render_header(self):
+        if self.parent_field is not None:
+            return "{0} - {1}".format(
+                self._translate(self.parent_field.title),
+                self._translate(self.field.title),
+            )
         return self._translate(self.field.title)
 
     def render_value(self, obj):
