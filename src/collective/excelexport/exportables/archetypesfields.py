@@ -1,8 +1,15 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_get
 from Products.ATContentTypes.interfaces import IATContentType
-from Products.Archetypes.interfaces import IField, IFileField, IBooleanField, IDateTimeField, ITextField, ILinesField, \
-    IReferenceField
+from Products.Archetypes.interfaces import (
+    IField,
+    IFileField,
+    IBooleanField,
+    IDateTimeField,
+    ITextField,
+    ILinesField,
+    IReferenceField,
+)
 from Products.CMFCore.utils import getToolByName
 from Products.CMFDynamicViewFTI.interfaces import IDynamicViewTypeInformation
 from Products.CMFPlone.utils import safe_unicode
@@ -21,15 +28,13 @@ from zope.interface.declarations import implementer
 
 @implementer(IExportable)
 class BaseFieldRenderer(object):
-
     def __init__(self, field, context, request):
         self.field = field
         self.context = context
         self.request = request
 
     def __repr__(self):
-        return "<%s - %s>" % (self.__class__.__name__,
-                              self.field.__name__)
+        return "<%s - %s>" % (self.__class__.__name__, self.field.__name__)
 
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
@@ -67,14 +72,11 @@ def get_exportable(field, context, request):
     try:
         # check if there is a specific adapter for the field name
         exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable,
-            name=field.__name__)
+            (field, context, request), interface=IExportable, name=field.__name__
+        )
     except ComponentLookupError:
         # get the generic adapter for the field
-        exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable)
+        exportable = getMultiAdapter((field, context, request), interface=IExportable)
 
     return exportable
 
@@ -82,12 +84,15 @@ def get_exportable(field, context, request):
 class ArchetypesFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
+
     adapts(IDynamicViewTypeInformation, Interface, Interface)
     weight = 100
 
     def get_exportables(self):
-        archetype_tool = getToolByName(self.context, 'archetype_tool')
-        schema = archetype_tool.lookupType(self.fti.product, self.fti.content_meta_type)['schema']
+        archetype_tool = getToolByName(self.context, "archetype_tool")
+        schema = archetype_tool.lookupType(
+            self.fti.product, self.fti.content_meta_type
+        )["schema"]
         fields = schema.fields()
         exportables = []
         for field in fields:
@@ -140,7 +145,7 @@ class DateFieldRenderer(BaseFieldRenderer):
         return value.strftime("%Y/%m/%d")
 
     def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd'
+        base_style.num_format_str = "yyyy/mm/dd"
         return base_style
 
 
@@ -157,9 +162,9 @@ class LinesFieldRenderer(BaseFieldRenderer):
         value = self.get_value(obj)
         if self.field.vocabulary:
             vocabulary = self.field.Vocabulary(obj)
-            value = ', '.join([vocabulary.getValue(v) or v for v in value])
+            value = ", ".join([vocabulary.getValue(v) or v for v in value])
         else:
-            value = ', '.join(value)
+            value = ", ".join(value)
 
         return value
 
@@ -181,7 +186,7 @@ class TextFieldRenderer(BaseFieldRenderer):
 
         text = safe_unicode(self._get_text(value))
         if len(text) > self.truncate_at + 3:
-            return text[:self.truncate_at] + u"..."
+            return text[: self.truncate_at] + u"..."
 
         return text
 
@@ -192,7 +197,7 @@ class ReferenceFieldRenderer(BaseFieldRenderer):
     def render_value(self, obj):
         value = self.get_value(obj)
         if self.field.multiValued:
-            return u', '.join([self.render_collection_entry(obj, v) for v in value])
+            return u", ".join([self.render_collection_entry(obj, v) for v in value])
         else:
             return self.render_collection_entry(obj, value)
 

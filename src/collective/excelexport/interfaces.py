@@ -13,15 +13,22 @@ class IDataSource(Interface):
     """Gets the fields and objects to serialize in excel file
     provided by a named adapter that adapts the context and the request
     """
-    exportables_order = Attribute("""List of exportable names by order of appareance in the export table.
+
+    exportables_order = Attribute(
+        """List of exportable names by order of appareance in the export table.
     The names are the field names and/or the names of the exportable classes.
-    """)
-    excluded_exportables = Attribute("""List of exportables excluded from this source.
+    """
+    )
+    excluded_exportables = Attribute(
+        """List of exportables excluded from this source.
     The names are the field names and/or the names of the exportable classes.
-    """)
-    excluded_factories = Attribute("""List of exportable factories excluded from this source.
+    """
+    )
+    excluded_factories = Attribute(
+        """List of exportable factories excluded from this source.
     The names are the IExportableFactory utility names.
-    """)
+    """
+    )
 
     def get_filename(self):
         """Gets the file name (without extension) of the exported excel
@@ -49,9 +56,11 @@ class IExportableFactory(Interface):
     we can have many exportable factories for a fti
     we can restrict an exportable factory on few portal types or behaviors
     """
+
     portal_types = Attribute("""list: portal_types on wich this factory applies""")
     behaviors = Attribute(
-        """list of interfaces: if set, the factory applies on types implementing one of those behaviors""")
+        """list of interfaces: if set, the factory applies on types implementing one of those behaviors"""
+    )
     weight = Attribute("""Weight for order (the lower, the first)""")
 
     def get_exportables(self):

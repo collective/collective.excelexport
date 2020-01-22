@@ -10,21 +10,21 @@ from zope.interface import implementer
 
 
 def get_name(column):
-    if hasattr(column, 'field'):
+    if hasattr(column, "field"):
         return column.field.getName()
     else:
         return column.__class__.__name__
 
 
 _CONFIGURATION_FIELDS = [
-    'allowDiscussion',  # archetypes
-    'allow_discussion',  # dexterity
-    'constrainTypesMode',
-    'excludeFromNav',  # archetypes
-    'exclude_from_nav',  # dexterity
-    'locallyAllowedTypes',
-    'immediatelyAddableTypes',
-    'nextPreviousEnabled',
+    "allowDiscussion",  # archetypes
+    "allow_discussion",  # dexterity
+    "constrainTypesMode",
+    "excludeFromNav",  # archetypes
+    "exclude_from_nav",  # dexterity
+    "locallyAllowedTypes",
+    "immediatelyAddableTypes",
+    "nextPreviousEnabled",
 ]
 
 
@@ -37,6 +37,7 @@ class BaseContentsDataSource(object):
 
     group them by portal type (one sheet by portal type)
     """
+
     excluded_factories = None
     excluded_exportables = None
     exportables_order = None  # use this to specify exportables order using field names
@@ -46,8 +47,9 @@ class BaseContentsDataSource(object):
         self.request = request
         if not self.excluded_exportables:
             self.excluded_exportables = api.portal.get_registry_record(
-                name='collective.excelexport.excluded_exportables',
-                default=_CONFIGURATION_FIELDS)
+                name="collective.excelexport.excluded_exportables",
+                default=_CONFIGURATION_FIELDS,
+            )
 
     def get_filename(self):
         """Gets the file name (without extension) of the exported excel
@@ -100,8 +102,9 @@ class BaseContentsDataSource(object):
             return sorted_exportables
 
     def get_factories(self, p_type_fti):
-        factories = getAdapters((p_type_fti, self.context, self.request),
-                                IExportableFactory)
+        factories = getAdapters(
+            (p_type_fti, self.context, self.request), IExportableFactory
+        )
         filtered_factories = []
         for factory_name, factory in sorted(factories, key=lambda f: f[1].weight):
             if factory.portal_types and p_type_fti.id not in factory.portal_types:
@@ -134,7 +137,7 @@ class BaseContentsDataSource(object):
         for obj in objects:
             p_types_objects.setdefault(obj.portal_type, []).append(obj)
 
-        ttool = api.portal.get_tool('portal_types')
+        ttool = api.portal.get_tool("portal_types")
         data = []
         for p_type in sorted(p_types_objects.keys()):
             # get exportables for each content type
@@ -154,9 +157,12 @@ class BaseContentsDataSource(object):
             exportables = self.sort_exportables(exportables)
 
             title = p_type_fti.Title()
-            data.append({'title': title,
-                         'objects': p_types_objects[p_type],
-                         'exportables': exportables
-                         })
+            data.append(
+                {
+                    "title": title,
+                    "objects": p_types_objects[p_type],
+                    "exportables": exportables,
+                }
+            )
 
         return data

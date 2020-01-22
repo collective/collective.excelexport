@@ -23,12 +23,18 @@ from zope.interface import Interface
 from zope.interface.declarations import implementer
 from zope.schema import getFieldsInOrder
 from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.interfaces import IField, IDate, ICollection, \
-    IVocabularyFactory, IBool, IText, IDatetime
+from zope.schema.interfaces import (
+    IField,
+    IDate,
+    ICollection,
+    IVocabularyFactory,
+    IBool,
+    IText,
+    IDatetime,
+)
 
 
 class FieldWrapper(object):
-
     def __init__(self, field):
         self.field = field
 
@@ -37,13 +43,11 @@ class FieldWrapper(object):
 
 
 class ParentField(FieldWrapper):
-
     def bind(self, obj):
         return self.field.bind(obj.__parent__)
 
 
 class GrandParentField(FieldWrapper):
-
     def bind(self, obj):
         return self.field.bind(obj.__parent__.__parent__)
 
@@ -68,15 +72,15 @@ def get_ordered_fields(fti):
     # can take place in the same fieldset
     schema = fti.lookupSchema()
     fieldset_fields = {}
-    ordered_fieldsets = ['default']
+    ordered_fieldsets = ["default"]
     for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
         ordered_fieldsets.append(fieldset.__name__)
         fieldset_fields[fieldset.__name__] = fieldset.fields
 
-    if fieldset_fields.get('default', []):
-        fieldset_fields['default'] += non_fieldset_fields(schema)
+    if fieldset_fields.get("default", []):
+        fieldset_fields["default"] += non_fieldset_fields(schema)
     else:
-        fieldset_fields['default'] = non_fieldset_fields(schema)
+        fieldset_fields["default"] = non_fieldset_fields(schema)
 
     # Get the behavior fields
     fields = getFieldsInOrder(schema)
@@ -90,7 +94,7 @@ def get_ordered_fields(fti):
             fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
             ordered_fieldsets.append(fieldset.__name__)
 
-        fieldset_fields['default'].extend(non_fieldset_fields(schema))
+        fieldset_fields["default"].extend(non_fieldset_fields(schema))
 
     ordered_fields = []
     for fieldset in ordered_fieldsets:
@@ -106,14 +110,11 @@ def get_exportable(field, context, request):
     try:
         # check if there is a specific adapter for the field name
         exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable,
-            name=field.__name__)
+            (field, context, request), interface=IExportable, name=field.__name__
+        )
     except ComponentLookupError:
         # get the generic adapter for the field
-        exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable)
+        exportable = getMultiAdapter((field, context, request), interface=IExportable)
 
     return exportable
 
@@ -122,13 +123,16 @@ def get_exportable_for_fieldname(context, fieldname, request):
     """Get exportable from dexterity fieldname, context and request
     """
     # get the field
-    field = filter(lambda x: x[0] == fieldname, get_ordered_fields(context.getTypeInfo()))[0][1]
+    field = filter(
+        lambda x: x[0] == fieldname, get_ordered_fields(context.getTypeInfo())
+    )[0][1]
     return get_exportable(field, context, request)
 
 
 class DexterityFieldsExportableFactory(BaseExportableFactory):
     """Get fields content schema
     """
+
     adapts(IDexterityFTI, Interface, Interface)
     weight = 100
 
@@ -136,9 +140,7 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
         fields = get_ordered_fields(self.fti)
         exportables = []
         for field in fields:
-            exportables.append(get_exportable(field[1],
-                                              self.context,
-                                              self.request))
+            exportables.append(get_exportable(field[1], self.context, self.request))
 
         return exportables
 
@@ -161,22 +163,20 @@ class DexterityValueGetter(object):
 
     def get(self, field):
         value = getattr(aq_base(self.context), field.__name__, None)
-        if hasattr(value, '__call__'):
+        if hasattr(value, "__call__"):
             value = value()
         return value
 
 
 @implementer(IExportable)
 class BaseFieldRenderer(object):
-
     def __init__(self, field, context, request):
         self.field = field
         self.context = context
         self.request = request
 
     def __repr__(self):
-        return "<%s - %s>" % (self.__class__.__name__,
-                              self.field.__name__)
+        return "<%s - %s>" % (self.__class__.__name__, self.field.__name__)
 
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
@@ -249,7 +249,7 @@ class DateFieldRenderer(BaseFieldRenderer):
         return value.strftime("%Y/%m/%d")
 
     def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd'
+        base_style.num_format_str = "yyyy/mm/dd"
         return base_style
 
 
@@ -269,7 +269,7 @@ class DateTimeFieldRenderer(BaseFieldRenderer):
         return value.strftime("%Y/%m/%d %H:%M")
 
     def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd'
+        base_style.num_format_str = "yyyy/mm/dd"
         return base_style
 
 
@@ -287,7 +287,9 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             if not vocabulary:
                 vocabularyName = self.field.vocabularyName
                 if vocabularyName:
-                    vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
+                    vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(
+                        obj
+                    )
 
             if vocabulary:
                 try:
@@ -331,12 +333,16 @@ class CollectionFieldRenderer(BaseFieldRenderer):
             value_type = self.field
 
         sub_renderer = getMultiAdapter(
-            (value_type, self.context, self.request),
-            interface=IExportable)
+            (value_type, self.context, self.request), interface=IExportable
+        )
 
-        return value and self.separator.join(
-            [sub_renderer.render_collection_entry(obj, v)
-             for v in value]) or u""
+        return (
+            value
+            and self.separator.join(
+                [sub_renderer.render_collection_entry(obj, v) for v in value]
+            )
+            or u""
+        )
 
 
 class TextFieldRenderer(BaseFieldRenderer):
@@ -356,7 +362,7 @@ class TextFieldRenderer(BaseFieldRenderer):
 
         text = safe_unicode(self._get_text(value))
         if len(text) > self.truncate_at + 3:
-            return text[:self.truncate_at] + u"..."
+            return text[: self.truncate_at] + u"..."
 
         return text
 
@@ -365,8 +371,8 @@ class RichTextFieldRenderer(TextFieldRenderer):
     adapts(IRichText, Interface, Interface)
 
     def _get_text(self, value):
-        ptransforms = api.portal.get_tool('portal_transforms')
-        return ptransforms.convert('html_to_text', value.output).getData().strip()
+        ptransforms = api.portal.get_tool("portal_transforms")
+        return ptransforms.convert("html_to_text", value.output).getData().strip()
 
 
 try:
@@ -384,6 +390,7 @@ try:
         def render_collection_entry(self, obj, value):
             return value and value.to_object and value.to_object.Title() or u""
 
+
 except:
     HAS_RELATIONFIELD = False
 
@@ -399,19 +406,23 @@ try:
             fields = getFieldsInOrder(self.field.schema)
             field_renderings = []
             for fieldname, field in fields:
-                sub_renderer = getMultiAdapter((field,
-                                                self.context, self.request),
-                                               interface=IExportable)
-                field_renderings.append(u"%s : %s" % (
-                    sub_renderer.render_header(),
-                    sub_renderer.render_collection_entry(obj,
-                                                         value.get(fieldname))))
+                sub_renderer = getMultiAdapter(
+                    (field, self.context, self.request), interface=IExportable
+                )
+                field_renderings.append(
+                    u"%s : %s"
+                    % (
+                        sub_renderer.render_header(),
+                        sub_renderer.render_collection_entry(obj, value.get(fieldname)),
+                    )
+                )
 
             return u" / ".join([r for r in field_renderings])
 
         def render_value(self, obj):
             value = self.get_value(obj)
             return self.render_collection_entry(obj, value)
+
 
 except:
     HAS_DATAGRIDFIELD = False

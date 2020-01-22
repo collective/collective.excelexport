@@ -16,8 +16,12 @@ class FormattableNamesFieldRenderer(BaseFieldRenderer):
         rendered = []
         value = self.get_value(obj)
         for v in value:
-            rendered.append(u' '.join([safe_unicode(v[sv]) for sv in subfields if v[sv] and v[sv].strip()]))
-        return u', '.join(rendered)
+            rendered.append(
+                u" ".join(
+                    [safe_unicode(v[sv]) for sv in subfields if v[sv] and v[sv].strip()]
+                )
+            )
+        return u", ".join(rendered)
 
 
 class RecordFieldRenderer(BaseFieldRenderer):
