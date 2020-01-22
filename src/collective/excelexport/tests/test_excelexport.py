@@ -11,6 +11,7 @@ from plone.app.testing.interfaces import TEST_USER_NAME
 from collective.excelexport.datasources.base import BaseContentsDataSource
 from collective.excelexport.datasources.folder import FolderContentsDataSource
 from collective.excelexport.testing import IntegrationTestCase
+from collective.excelexport.tests.object_factory import GenericObject
 from plone import api
 from plone.namedfile.file import NamedImage
 from z3c.relationfield.relation import RelationValue
@@ -342,14 +343,16 @@ ce sera moi.""",
         self.assertEqual(exportables[3].__class__, DummyExportable2)
         self.assertEqual(exportables[4].__class__, DummyExportable3)
 
-    def test_ObjectFieldRenderer_render_multi_values(self):
+    def test_ObjectField_render_multi_values(self):
 
         self.content = api.content.create(
-            self.portal.container,
-            type="complex",
-            title="Test title",
-            object_field=["Field1 value", "Field2 value"],
+            self.portal.container, type="complex", title=u"Test title"
         )
+        self.content.object_field = type(
+            "obj",
+            (GenericObject,),
+            {"field1": u"Field1 value", "field2": u"Field2 value"},
+        )()
 
         import xlrd
 
@@ -360,6 +363,6 @@ ce sera moi.""",
         sheets = xlrd.open_workbook(generated_path)
         sheet = sheets.sheet_by_name(u"complex")
         row0 = sheet.row_values(0)
-        self.assertEqual(row0, [u"Title", u"Address - Field 1", u"Address - Filed 2"])
+        self.assertEqual(row0, [u"Title", u"Address - Field 1", u"Address - Field 2"])
         row1 = sheet.row_values(1)
-        self.assertEqual(row1, [u"Test title", u"Field 1 value", u"Filed 2 value"])
+        self.assertEqual(row1, [u"Test title", u"Field1 value", u"Field2 value"])

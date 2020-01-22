@@ -4,6 +4,7 @@ from plone.supermodel import model
 from zope import schema
 from zope.interface import implements
 from collective.excelexport.tests.object_factory import ObjectField
+from collective.excelexport.tests.object_factory import register_object_factories
 
 
 class IObjectSchema(model.Schema):
@@ -19,3 +20,6 @@ class IComplex(model.Schema):
 
 class Complex(Container):
     implements(IComplex)
+
+
+register_object_factories(IComplex)
