@@ -235,7 +235,7 @@ class BaseFieldRenderer(object):
 
     def render_header(self):
         if self.parent_field is not None:
-            return "{0} - {1}".format(
+            return safe_unicode("{0} - {1}").format(
                 self._translate(self.parent_field.title),
                 self._translate(self.field.title),
             )
