@@ -5,7 +5,8 @@ Changelog
 1.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add Python 3 compatibility.
+  [bsuttor]
 
 
 1.8.1 (2019-11-06)
