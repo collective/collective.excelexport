@@ -1,5 +1,9 @@
 import datetime
-from StringIO import StringIO
+
+try:
+    from StringIO import StringIO  ## for Python 2
+except ImportError:
+    from io import StringIO  ## for Python 3
 from copy import copy
 from csv import writer as csvwriter
 
