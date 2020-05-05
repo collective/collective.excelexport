@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: collective.excelexport 1.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2020-05-05 20:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
@@ -12,21 +12,9 @@ msgstr ""
 "Language-Code: fr\n"
 "Language-Name: French\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: collective.excelexport\n"
+"Domain: plone\n"
 "X-Is-Fallback-For: fr-be fr-ca fr-lu fr-mc fr-ch fr-fr\n"
 
-#: ../minimal.zcml:25
-msgid "Installs the collective.excelexport add-on."
-msgstr ""
-
-#: ../testing.zcml:20
-msgid "Steps to ease tests of collective.excelexport"
-msgstr ""
-
-#: ../minimal.zcml:25
-msgid "collective.excelexport"
-msgstr ""
-
-#: ../testing.zcml:20
-msgid "collective.excelexport tests"
+#: ../profiles/default/registry.xml
+msgid "Fields excluded by default excel export datasource"
 msgstr ""

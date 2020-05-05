@@ -15,20 +15,8 @@ msgstr ""
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: collective.excelexport\n"
+"Domain: plone\n"
 
-#: ../minimal.zcml:25
-msgid "Installs the collective.excelexport add-on."
-msgstr ""
-
-#: ../testing.zcml:20
-msgid "Steps to ease tests of collective.excelexport"
-msgstr ""
-
-#: ../minimal.zcml:25
-msgid "collective.excelexport"
-msgstr ""
-
-#: ../testing.zcml:20
-msgid "collective.excelexport tests"
+#: ../profiles/default/registry.xml
+msgid "Fields excluded by default excel export datasource"
 msgstr ""

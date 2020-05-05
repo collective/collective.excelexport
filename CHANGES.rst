@@ -5,7 +5,8 @@ Changelog
 1.8.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Updated the i18n support.
+  [macagua]
 
 
 1.8.2 (2020-02-27)

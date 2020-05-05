@@ -2,7 +2,7 @@
 <registry>
   <record name="collective.excelexport.excluded_exportables">
     <field type="plone.registry.field.List">
-      <title>Fields excluded by default excel export datasource</title>
+      <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Fields excluded by default excel export datasource</title>
       <value_type type="plone.registry.field.TextLine"/>
     </field>
     <value>
