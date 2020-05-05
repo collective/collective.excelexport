@@ -1,10 +1,3 @@
-.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
-    :target: http://travis-ci.org/collective/collective.excelexport
-
-.. image:: https://coveralls.io/repos/collective/collective.excelexport/badge.png?branch=master
-    :target: https://coveralls.io/r/collective/collective.excelexport?branch=master
-
-
 ======================
 collective.excelexport
 ======================
@@ -12,18 +5,48 @@ collective.excelexport
 What does this product
 ======================
 
-This product provides tools to provide excel exports to Plone users,
+This product provides tools to provide excel exports to `Plone`_ users,
 under xls or csv format.
 
 A framework, with default utilities to export the dexterity contents of a folder,
 the results of a catalog search,
-and the results of a eea faceted navigation search.
+and the results of a `eea faceted navigation`_ search.
 Many field types are managed (text, list, file, boolean, datagrid...).
 
 Try @@collective.excelexport view on any folder containing dexterity elements.
 Try @@collective.excelexport?excelexport.policy=excelexport.search&review_state=published on site root.
 
 Try @@collective.excelexportcsv view on any folder for csv export.
+
+
+Translations
+============
+
+This product has been translated into
+
+- French.
+
+- Spanish.
+
+You can contribute for any message missing or other new languages, join us at
+`Plone Collective Team <https://www.transifex.com/plone/plone-collective/>`_
+into *Transifex.net* service with all world Plone translators community.
+
+
+Installation
+============
+
+Install ``collective.documentgenerator`` by adding it to your buildout:
+
+   [buildout]
+
+    ...
+
+    eggs =
+        collective.documentgenerator
+
+
+and then running "bin/buildout"
 
 
 How to configure this product
@@ -40,8 +63,8 @@ Datasources
 -----------
 
 If you want to implement a new way to get content to export,
-you can register a #datasource#,
-wich is an adapter for collective.excelexport.interfaces.IDataSource interface.
+you can register a #datasource#, which is an adapter for
+collective.excelexport.interfaces.IDataSource interface.
 
 This adapter can be a named one.
 
@@ -140,5 +163,40 @@ and in python: ::
 plone.restapi
 =============
 
-To get an export via rest api, query @collective.excelexport / @collective.excelexportcsv (with one @)
+To get an export via `rest api`_, query @collective.excelexport / @collective.excelexportcsv (with one @)
 
+
+Tests status
+============
+
+This add-on is tested using Travis CI. The current status of the add-on is:
+
+.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
+    :target: https://travis-ci.org/collective/collective.excelexport
+
+.. image:: https://coveralls.io/repos/collective/collective.excelexport/badge.png?branch=master
+    :target: https://coveralls.io/r/collective/collective.excelexport?branch=master
+
+.. image:: http://img.shields.io/pypi/v/collective.excelexport.svg
+   :alt: PyPI badge
+   :target: https://pypi.org/project/collective.excelexport
+
+
+Contribute
+==========
+
+Have an idea? Found a bug? Let us know by `opening a ticket`_.
+
+- Issue Tracker: https://github.com/collective/collective.excelexport/issues
+- Source Code: https://github.com/collective/collective.excelexport
+
+
+License
+=======
+
+The project is licensed under the GPLv2.
+
+.. _Plone: https://plone.org/
+.. _`eea faceted navigation`: http://eea.github.io/docs/eea.facetednavigation/index.html
+.. _`rest api`: https://pypi.org/project/plone.restapi/
+.. _`opening a ticket`: https://github.com/collective/collective.excelexport/issues
