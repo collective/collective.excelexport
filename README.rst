@@ -36,14 +36,14 @@ into *Transifex.net* service with all world Plone translators community.
 Installation
 ============
 
-Install ``collective.documentgenerator`` by adding it to your buildout:
+Install ``collective.excelexport`` by adding it to your buildout:
 
    [buildout]
 
     ...
 
     eggs =
-        collective.documentgenerator
+        collective.excelexport
 
 
 and then running "bin/buildout"
