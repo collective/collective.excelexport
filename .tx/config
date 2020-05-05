@@ -1,0 +1,16 @@
+[main]
+host = https://www.transifex.com
+
+[plone-collective.collective-excelexport-pot]
+file_filter = src/collective/excelexport/locales/<lang>/LC_MESSAGES/collective.excelexport.po
+minimum_perc = 0
+source_file = src/collective/excelexport/locales/collective.excelexport.pot
+source_lang = en
+type = PO
+
+[plone-collective.collective-excelexport-plone-pot]
+file_filter = src/collective/excelexport/locales/<lang>/LC_MESSAGES/plone.po
+minimum_perc = 0
+source_file = src/collective/excelexport/locales/plone.pot
+source_lang = en
+type = PO
