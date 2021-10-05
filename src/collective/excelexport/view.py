@@ -80,6 +80,11 @@ class ExcelExport(BaseExport):
     mimetype = "application/vnd.ms-excel"
     extension = "xls"
     encoding = "windows-1252"
+    
+    def _format_render(self, render):
+        if isinstance(render, int):
+            return render
+        return super(ExcelExport, self)._format_render(render)
 
     def write_sheet(self, sheet, sheetinfo, styles):
         # values
