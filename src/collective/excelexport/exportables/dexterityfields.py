@@ -16,7 +16,7 @@ from z3c.form.interfaces import NO_VALUE
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.component.interfaces import ComponentLookupError
+from zope.interface.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface import Interface
