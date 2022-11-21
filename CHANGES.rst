@@ -5,6 +5,9 @@ Changelog
 1.8.3 (unreleased)
 ------------------
 
+- Correctly export integer as number for excel.
+  [Gagaro]
+
 - Added Transifex.net service integration to manage the translation process.
   [macagua]
 

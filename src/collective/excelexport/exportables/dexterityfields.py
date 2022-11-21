@@ -355,6 +355,9 @@ class TextFieldRenderer(BaseFieldRenderer):
             return ""
 
         text = safe_unicode(self._get_text(value))
+        if not isinstance(text, unicode):
+            return text
+
         if len(text) > self.truncate_at + 3:
             return text[:self.truncate_at] + u"..."
 
