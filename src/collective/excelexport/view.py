@@ -14,7 +14,10 @@ from Products.Five.browser import BrowserView
 from collective.excelexport.interfaces import IDataSource, IStyles
 from xlwt import CompoundDoc
 from zope.component import getMultiAdapter
-from zope.interface.interfaces import ComponentLookupError
+try:
+    from zope.interface.interfaces import ComponentLookupError
+except ImportError:
+    from zope.component.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 
