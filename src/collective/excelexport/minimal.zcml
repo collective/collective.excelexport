@@ -31,6 +31,14 @@
       handler=".setuphandlers.post_install">
   </genericsetup:importStep>
 
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="collective.excelexport"
+      directory="profiles/uninstall"
+      description="Uninstalls the collective.excelexport add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+  />
+
   <browser:page name="collective.excelexport"
                 for="*"
                 class=".view.ExcelExport"

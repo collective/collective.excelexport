@@ -5,6 +5,9 @@ Changelog
 1.8.3 (unreleased)
 ------------------
 
+- Add uninstall profile
+  [laulaz]
+
 - Added Transifex.net service integration to manage the translation process.
   [macagua]
 
