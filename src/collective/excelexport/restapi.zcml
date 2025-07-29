@@ -2,7 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:plone="http://namespaces.plone.org/plone">
 
-  <include package="plone.restapi"/>
+  <include package="plone.restapi" file="permissions.zcml"/>
 
   <plone:service
       method="GET"
