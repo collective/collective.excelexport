@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 from Acquisition import aq_base
-from Products.CMFPlone.utils import safe_unicode
 from collective.excelexport.exportables.base import BaseExportableFactory
 from collective.excelexport.interfaces import IExportable
 from plone import api
 from plone.app.textfield.interfaces import IRichText
 from plone.autoform.interfaces import IFormFieldProvider
+from plone.base.utils import safe_text
 from plone.behavior.interfaces import IBehavior
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.interfaces import IDexterityFTI
@@ -13,13 +13,11 @@ from plone.namedfile.interfaces import INamedField
 from plone.schemaeditor.schema import IChoice
 from plone.supermodel.interfaces import FIELDSETS_KEY
 from z3c.form.interfaces import NO_VALUE
+from z3c.relationfield.interfaces import IRelation
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-try:
-    from zope.interface.interfaces import ComponentLookupError
-except ImportError:
-    from zope.component.interfaces import ComponentLookupError
+from zope.interface.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface import Interface
@@ -125,7 +123,7 @@ def get_exportable_for_fieldname(context, fieldname, request):
     """Get exportable from dexterity fieldname, context and request
     """
     # get the field
-    field = filter(lambda x: x[0] == fieldname, get_ordered_fields(context.getTypeInfo()))[0][1]
+    field = [x for x in get_ordered_fields(context.getTypeInfo()) if x[0] == fieldname][0][1]
     return get_exportable(field, context, request)
 
 
@@ -203,7 +201,7 @@ class BaseFieldRenderer(object):
     def render_collection_entry(self, obj, value):
         """Render a value element if the field is a sub field of a collection
         """
-        return safe_unicode(value or "")
+        return safe_text(value or "")
 
     def render_style(self, obj, base_style):
         """Gets the style rendering of the
@@ -308,7 +306,7 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
                     res = title
             else:
                 res = value
-        return safe_unicode(res)
+        return safe_text(res)
 
     def render_value(self, obj):
         value = self.get_value(obj)
@@ -357,7 +355,7 @@ class TextFieldRenderer(BaseFieldRenderer):
         if not value or value == NO_VALUE:
             return ""
 
-        text = safe_unicode(self._get_text(value))
+        text = safe_text(self._get_text(value))
         if len(text) > self.truncate_at + 3:
             return text[:self.truncate_at] + u"..."
 
@@ -372,23 +370,16 @@ class RichTextFieldRenderer(TextFieldRenderer):
         return ptransforms.convert('html_to_text', value.output).getData().strip()
 
 
-try:
-    from z3c.relationfield.interfaces import IRelation
+class RelationFieldRenderer(BaseFieldRenderer):
+    adapts(IRelation, Interface, Interface)
 
-    HAS_RELATIONFIELD = True
+    def render_value(self, obj):
+        value = self.get_value(obj)
+        return self.render_collection_entry(obj, value)
 
-    class RelationFieldRenderer(BaseFieldRenderer):
-        adapts(IRelation, Interface, Interface)
+    def render_collection_entry(self, obj, value):
+        return value and value.to_object and value.to_object.Title() or u""
 
-        def render_value(self, obj):
-            value = self.get_value(obj)
-            return self.render_collection_entry(obj, value)
-
-        def render_collection_entry(self, obj, value):
-            return value and value.to_object and value.to_object.Title() or u""
-
-except:
-    HAS_RELATIONFIELD = False
 
 try:
     from collective.z3cform.datagridfield.interfaces import IRow
@@ -416,5 +407,5 @@ try:
             value = self.get_value(obj)
             return self.render_collection_entry(obj, value)
 
-except:
+except ImportError:
     HAS_DATAGRIDFIELD = False

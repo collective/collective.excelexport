@@ -33,7 +33,7 @@
 
   <genericsetup:registerProfile
       name="uninstall"
-      title="collective.excelexport"
+      title="collective.excelexport uninstall"
       directory="profiles/uninstall"
       description="Uninstalls the collective.excelexport add-on."
       provides="Products.GenericSetup.interfaces.EXTENSION"

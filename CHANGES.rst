@@ -5,6 +5,9 @@ Changelog
 1.8.3 (unreleased)
 ------------------
 
+- Add Plone 6 compatibility, drop Plone 4 & Plone 5 compatibility
+  [laulaz]
+
 - Add uninstall profile
   [laulaz]
 

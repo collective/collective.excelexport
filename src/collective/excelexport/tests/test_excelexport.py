@@ -13,6 +13,7 @@ from collective.excelexport.datasources.folder import FolderContentsDataSource
 from collective.excelexport.testing import IntegrationTestCase
 from plone import api
 from plone.namedfile.file import NamedImage
+from Products.CMFPlone.utils import get_installer
 from z3c.relationfield.relation import RelationValue
 from zope.component import getUtility
 from zope.intid.interfaces import IIntIds
@@ -25,15 +26,16 @@ class TestExcelExport(IntegrationTestCase):
 
     def _get_generated_filepath(self, output, suffix):
         generated_path = tempfile.mktemp(suffix=suffix)
-        generated_file = open(generated_path, 'w')
-        generated_file.write(output)
+        mode = 'wb' if isinstance(output, (bytes, bytearray)) else 'w'
+        with open(generated_path, mode) as generated_file:
+            generated_file.write(output)
         generated_file.close()
         return generated_path
 
     def setUp(self):
         """Custom shared utility setup for tests."""
         self.portal = self.layer['portal']
-        self.installer = api.portal.get_tool('portal_quickinstaller')
+        self.installer = get_installer(self.portal, self.layer["request"])
         intids = getUtility(IIntIds)
 
         login(self.portal, TEST_USER_NAME)
@@ -45,7 +47,7 @@ class TestExcelExport(IntegrationTestCase):
                                            subscription='silver',
                                            languages=('en', 'fr'),
                                            biography=u"Longtemps, je me suis couché de bonne heure",
-                                           photo=NamedImage(open(TEST_IMAGE).read(),
+                                           photo=NamedImage(open(TEST_IMAGE, "rb").read(),
                                                             contentType='image/png',
                                                             filename=u'logoplone.png'),
                                            )
@@ -62,13 +64,13 @@ ce sera moi.""",
                                            relatedItems=[RelationValue(intids.getId(self.content1))])
 
     def test_product_installed(self):
-        """Test if collective.excelexport is installed with portal_quickinstaller."""
-        self.assertTrue(self.installer.isProductInstalled('collective.excelexport'))
+        """Test if collective.excelexport is installed."""
+        self.assertTrue(self.installer.is_product_installed('collective.excelexport'))
 
     def test_uninstall(self):
         """Test if collective.excelexport is cleanly uninstalled."""
-        self.installer.uninstallProducts(['collective.excelexport'])
-        self.assertFalse(self.installer.isProductInstalled('collective.excelexport'))
+        self.installer.uninstall_product('collective.excelexport')
+        self.assertFalse(self.installer.is_product_installed('collective.excelexport'))
 
     # browserlayer.xml
     def test_browserlayer(self):
@@ -109,17 +111,18 @@ ce sera moi.""",
     def test_csv_export(self):
         output = self.portal.container.unrestrictedTraverse('@@collective.excelexportcsv')()
         generated_path = self._get_generated_filepath(output, 'test.csv')
-        lines = csvreader(open(generated_path), dialect='excel', delimiter=';')
-        headers_row = lines.next()
+        lines = csvreader(open(generated_path, 'r', encoding='windows-1252', newline=''),
+                          dialect='excel', delimiter=';')
+        headers_row = next(lines)
         self.assertEqual(headers_row, ['Name', 'Biography',
                                        'Birth date', 'subscription',
                                        'amount', 'Languages', 'Photo', 'Related Items'])
-        row1 = lines.next()
+        row1 = next(lines)
         self.assertEqual(row1, ['John Doe',
                                 'Longtemps, je me suis couch\xe9 de bonne heure',
                                 '1980/07/24', 'silver', '100',
                                 'English\nFran\xe7ais', 'logoplone.png', ''])
-        row2 = lines.next()
+        row2 = next(lines)
         self.assertEqual(row2, ['John Smith',
                                 "Je forme une entreprise qui n'eut jamais d'exem...",
                                 '1981/07/24', '', '100',

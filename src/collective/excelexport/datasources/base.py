@@ -17,11 +17,9 @@ def get_name(column):
 
 
 _CONFIGURATION_FIELDS = [
-    'allowDiscussion',  # archetypes
-    'allow_discussion',  # dexterity
+    'allow_discussion',
     'constrainTypesMode',
-    'excludeFromNav',  # archetypes
-    'exclude_from_nav',  # dexterity
+    'exclude_from_nav',
     'locallyAllowedTypes',
     'immediatelyAddableTypes',
     'nextPreviousEnabled',
@@ -52,10 +50,10 @@ class BaseContentsDataSource(object):
     def get_filename(self):
         """Gets the file name (without extension) of the exported excel
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def get_objects(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def filter_exportables(self, exportables):
         """Filter exportables whose field name is not in excluded_exportables
