@@ -3,7 +3,8 @@
 
 from zope.i18nmessageid import MessageFactory
 
-_ = MessageFactory('collective.excelexport')
+
+_ = MessageFactory("collective.excelexport")
 
 
 def initialize(context):

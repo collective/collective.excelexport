@@ -1,5 +1,4 @@
 from collections import OrderedDict
-
 from collective.excelexport.interfaces import IDataSource
 from collective.excelexport.interfaces import IExportableFactory
 from plone import api
@@ -10,19 +9,19 @@ from zope.interface import implementer
 
 
 def get_name(column):
-    if hasattr(column, 'field'):
+    if hasattr(column, "field"):
         return column.field.getName()
     else:
         return column.__class__.__name__
 
 
 _CONFIGURATION_FIELDS = [
-    'allow_discussion',
-    'constrainTypesMode',
-    'exclude_from_nav',
-    'locallyAllowedTypes',
-    'immediatelyAddableTypes',
-    'nextPreviousEnabled',
+    "allow_discussion",
+    "constrainTypesMode",
+    "exclude_from_nav",
+    "locallyAllowedTypes",
+    "immediatelyAddableTypes",
+    "nextPreviousEnabled",
 ]
 
 
@@ -35,6 +34,7 @@ class BaseContentsDataSource(object):
 
     group them by portal type (one sheet by portal type)
     """
+
     excluded_factories = None
     excluded_exportables = None
     exportables_order = None  # use this to specify exportables order using field names
@@ -44,12 +44,12 @@ class BaseContentsDataSource(object):
         self.request = request
         if not self.excluded_exportables:
             self.excluded_exportables = api.portal.get_registry_record(
-                name='collective.excelexport.excluded_exportables',
-                default=_CONFIGURATION_FIELDS)
+                name="collective.excelexport.excluded_exportables",
+                default=_CONFIGURATION_FIELDS,
+            )
 
     def get_filename(self):
-        """Gets the file name (without extension) of the exported excel
-        """
+        """Gets the file name (without extension) of the exported excel"""
         raise NotImplementedError
 
     def get_objects(self):
@@ -98,8 +98,9 @@ class BaseContentsDataSource(object):
             return sorted_exportables
 
     def get_factories(self, p_type_fti):
-        factories = getAdapters((p_type_fti, self.context, self.request),
-                                IExportableFactory)
+        factories = getAdapters(
+            (p_type_fti, self.context, self.request), IExportableFactory
+        )
         filtered_factories = []
         for factory_name, factory in sorted(factories, key=lambda f: f[1].weight):
             if factory.portal_types and p_type_fti.id not in factory.portal_types:
@@ -123,16 +124,16 @@ class BaseContentsDataSource(object):
 
     def get_sheets_data(self):
         """Gets a list of dictionaries with three keys :
-            title: the title of the sheet
-            objects: the list of objects
-            exportables: the exportables to render
+        title: the title of the sheet
+        objects: the list of objects
+        exportables: the exportables to render
         """
         objects = self.get_objects()
         p_types_objects = {}
         for obj in objects:
             p_types_objects.setdefault(obj.portal_type, []).append(obj)
 
-        ttool = api.portal.get_tool('portal_types')
+        ttool = api.portal.get_tool("portal_types")
         data = []
         for p_type in sorted(p_types_objects.keys()):
             # get exportables for each content type
@@ -152,9 +153,12 @@ class BaseContentsDataSource(object):
             exportables = self.sort_exportables(exportables)
 
             title = p_type_fti.Title()
-            data.append({'title': title,
-                         'objects': p_types_objects[p_type],
-                         'exportables': exportables
-                         })
+            data.append(
+                {
+                    "title": title,
+                    "objects": p_types_objects[p_type],
+                    "exportables": exportables,
+                }
+            )
 
         return data

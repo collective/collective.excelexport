@@ -1,26 +1,25 @@
-import datetime
-
+from collective.excelexport.interfaces import IDataSource
+from collective.excelexport.interfaces import IStyles
 from copy import copy
 from csv import writer as csvwriter
+from DateTime import DateTime
 from io import BytesIO
 from io import StringIO
-
-import xlwt
-from DateTime import DateTime
 from plone.base.utils import safe_text
 from Products.Five.browser import BrowserView
-from collective.excelexport.interfaces import IDataSource, IStyles
 from xlwt import CompoundDoc
 from zope.component import getMultiAdapter
-from zope.interface.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
+from zope.interface.interfaces import ComponentLookupError
+
+import datetime
+import xlwt
 
 
 class BaseExport(BrowserView):
     def _format_render(self, render):
-        """Common formatting to unicode
-        """
+        """Common formatting to unicode"""
         if isinstance(render, Message):
             render = translate(render, context=self.request)
         elif isinstance(render, str):
@@ -69,8 +68,7 @@ class BaseExport(BrowserView):
 
 
 class ExcelExport(BaseExport):
-    """Excel export view
-    """
+    """Excel export view"""
 
     mimetype = "application/vnd.ms-excel"
     extension = "xls"
@@ -122,7 +120,7 @@ class ExcelExport(BaseExport):
         if empty_doc:
             # empty doc
             sheet = xldoc.add_sheet("sheet 1")
-            sheet.write(0, 0, u"", styles.content)
+            sheet.write(0, 0, "", styles.content)
 
         return xldoc
 
