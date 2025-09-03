@@ -1,23 +1,18 @@
 import datetime
 
-try:
-    from StringIO import StringIO  ## for Python 2
-except ImportError:
-    from io import StringIO  ## for Python 3
 from copy import copy
 from csv import writer as csvwriter
+from io import BytesIO
+from io import StringIO
 
 import xlwt
 from DateTime import DateTime
-from Products.CMFPlone.utils import safe_unicode
+from plone.base.utils import safe_text
 from Products.Five.browser import BrowserView
 from collective.excelexport.interfaces import IDataSource, IStyles
 from xlwt import CompoundDoc
 from zope.component import getMultiAdapter
-try:
-    from zope.interface.interfaces import ComponentLookupError
-except ImportError:
-    from zope.component.interfaces import ComponentLookupError
+from zope.interface.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 
@@ -28,23 +23,20 @@ class BaseExport(BrowserView):
         """
         if isinstance(render, Message):
             render = translate(render, context=self.request)
-        elif isinstance(render, unicode):
+        elif isinstance(render, str):
             pass
         elif render is None:
-            render = u""
-        elif isinstance(render, str):
-            render = safe_unicode(render)
+            render = ""
         elif isinstance(render, datetime.datetime):
-            render = safe_unicode(render.strftime("%Y/%m/%d %H:%M"))
+            render = safe_text(render.strftime("%Y/%m/%d %H:%M"))
         elif isinstance(render, (DateTime, datetime.date)):
             try:
-                render = safe_unicode(render.strftime("%Y/%m/%d"))
+                render = safe_text(render.strftime("%Y/%m/%d"))
             except ValueError:
                 # when date < 1900
-                render = safe_unicode(render)
-        elif not isinstance(render, unicode):
-            render = safe_unicode(str(render))
-
+                render = safe_text(render)
+        elif not isinstance(render, str):
+            render = safe_text(str(render))
         return render
 
     def set_headers(self, datasource):
@@ -73,7 +65,7 @@ class BaseExport(BrowserView):
         self.set_headers(datasource)
         sheetsinfo = datasource.get_sheets_data()
         string_buffer = self.get_data_buffer(sheetsinfo, policy=policy)
-        return string_buffer.getvalue()
+        return string_buffer
 
 
 class ExcelExport(BaseExport):
@@ -89,7 +81,6 @@ class ExcelExport(BaseExport):
         for rownum, obj in enumerate(sheetinfo["objects"]):
             for exportablenum, exportable in enumerate(sheetinfo["exportables"]):
                 try:
-                    # dexterity
                     bound_obj = exportable.field.bind(obj).context
                 except AttributeError:
                     bound_obj = obj
@@ -136,7 +127,7 @@ class ExcelExport(BaseExport):
         return xldoc
 
     def get_data_buffer(self, sheetsinfo, policy=""):
-        string_buffer = StringIO()
+        string_buffer = BytesIO()
         try:
             styles = getMultiAdapter(
                 (self.context, self.request), interface=IStyles, name=policy
@@ -150,6 +141,10 @@ class ExcelExport(BaseExport):
         doc.save(string_buffer, data)
         return string_buffer
 
+    def __call__(self):
+        string_buffer = super(ExcelExport, self).__call__()
+        return string_buffer.getvalue()
+
 
 class CSVExport(BaseExport):
     mimetype = "text/csv"
@@ -158,11 +153,9 @@ class CSVExport(BaseExport):
 
     def _format_render(self, render):
         render = super(CSVExport, self)._format_render(render)
-        try:
-            return render.encode(encoding=self.encoding)
-        except UnicodeEncodeError:
-            # try default encoding
-            return render.encode(encoding="utf-8")
+        if not isinstance(render, str):
+            render = str(render)
+        return render
 
     def get_data_buffer(self, sheetsinfo, policy=None):
         string_buffer = StringIO()
@@ -203,3 +196,8 @@ class CSVExport(BaseExport):
                     csvhandler.writerow(valuesline)
 
         return string_buffer
+
+    def __call__(self):
+        string_buffer = super(CSVExport, self).__call__()
+        data = string_buffer.getvalue()
+        return data.encode(self.encoding, errors="replace")

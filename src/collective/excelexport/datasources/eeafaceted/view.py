@@ -1,5 +1,5 @@
 from copy import copy
-import urllib
+import urllib.parse
 from eea.facetednavigation.criteria.interfaces import ICriteria
 
 
@@ -9,7 +9,7 @@ class ExportUrl(object):
         params = copy(self.request.form)
 
         params = dict((key.replace('[]', ''), val)
-                      for key, val in params.items())
+                      for key, val in list(params.items()))
 
         ignored_params = ('version', 'b_start', 'reversed')
         for ignored in ignored_params:
@@ -17,7 +17,7 @@ class ExportUrl(object):
                 del params[ignored]
 
         criteria = ICriteria(self.context)
-        for param in params.keys():
+        for param in list(params.keys()):
             try:
                 widgetclass = criteria.widget(cid=param)
             except KeyError:
@@ -29,5 +29,5 @@ class ExportUrl(object):
 
         params['excelexport.policy'] = 'eea.facetednavigation'
         export_url = "%s/@@collective.excelexport?%s" % (self.context.absolute_url(),
-                                                         urllib.urlencode(params, doseq=True))
+                                                         urllib.parse.urlencode(params, doseq=True))
         return export_url

@@ -3,13 +3,6 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="collective.excelexport">
 
-  <include file="dexterityfields.zcml"
-           zcml:condition="installed plone.app.dexterity"/>
-
-  <include file="archetypesfields.zcml"
-           zcml:condition="installed Products.Archetypes"/>
-
-  <include file="atextensionsfields.zcml"
-           zcml:condition="installed Products.ATExtensions"/>
+  <include file="dexterityfields.zcml"/>
 
 </configure>

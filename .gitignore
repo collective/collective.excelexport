@@ -3,9 +3,11 @@
 *.pyc
 .installed.cfg
 .mr.developer.cfg
+.plone.versioncheck.tracked.json
 .project
 .pydevproject
 .settings/
+pyvenv.cfg
 bin/
 buildout-cache/
 develop-eggs/

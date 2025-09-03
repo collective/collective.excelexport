@@ -12,15 +12,7 @@ from plone.app.testing import login
 from plone.app.testing import setRoles
 
 import collective.excelexport
-import pkg_resources
 from plone import api
-
-try:
-    pkg_resources.get_distribution('plone.app.contenttypes')
-except pkg_resources.DistributionNotFound:
-    HAS_PA_CONTENTTYPES = False
-else:
-    HAS_PA_CONTENTTYPES = True
 
 
 class CollectiveExcelexportLayer(PloneWithPackageLayer):
@@ -28,17 +20,13 @@ class CollectiveExcelexportLayer(PloneWithPackageLayer):
     def setUpZope(self, *args, **kwargs):
         """Prepare Zope instance"""
         super(CollectiveExcelexportLayer, self).setUpZope(*args, **kwargs)
-        if HAS_PA_CONTENTTYPES:
-            import plone.app.contenttypes
-            self.loadZCML(package=plone.app.contenttypes)
+        import plone.app.contenttypes
+        self.loadZCML(package=plone.app.contenttypes)
 
     def setUpPloneSite(self, portal):
         """Set up Plone."""
         super(CollectiveExcelexportLayer, self).setUpPloneSite(portal)
-
-        # Plone 5 support
-        if HAS_PA_CONTENTTYPES:
-            self.applyProfile(portal, 'plone.app.contenttypes:default')
+        self.applyProfile(portal, 'plone.app.contenttypes:default')
 
         # Login and create some test content
         setRoles(portal, TEST_USER_ID, ['Manager'])

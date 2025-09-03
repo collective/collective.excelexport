@@ -3,13 +3,4 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.excelexport">
 
-  <genericsetup:upgradeStep
-      source="1"
-      destination="2"
-      title="Set default excluded fields registry record"
-      description=""
-      profile="collective.excelexport:default"
-      handler=".upgrades.upgrade_to_2"
-  />
-
 </configure>

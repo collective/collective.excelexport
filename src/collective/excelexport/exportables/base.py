@@ -24,4 +24,4 @@ class BaseExportableFactory(object):
         self.request = request
 
     def get_exportables(self):
-        raise NotImplemented
+        raise NotImplementedError
