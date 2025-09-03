@@ -17,15 +17,20 @@ from z3c.relationfield.interfaces import IRelation
 from zope.component import adapts
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.interface.interfaces import ComponentLookupError
 from zope.i18n import translate
 from zope.i18nmessageid.message import Message
 from zope.interface import Interface
 from zope.interface.declarations import implementer
+from zope.interface.interfaces import ComponentLookupError
 from zope.schema import getFieldsInOrder
+from zope.schema.interfaces import IBool
+from zope.schema.interfaces import ICollection
 from zope.schema.interfaces import IContextSourceBinder
-from zope.schema.interfaces import IField, IDate, ICollection, \
-    IVocabularyFactory, IBool, IText, IDatetime
+from zope.schema.interfaces import IDate
+from zope.schema.interfaces import IDatetime
+from zope.schema.interfaces import IField
+from zope.schema.interfaces import IText
+from zope.schema.interfaces import IVocabularyFactory
 
 
 class FieldWrapper(object):
@@ -69,15 +74,15 @@ def get_ordered_fields(fti):
     # can take place in the same fieldset
     schema = fti.lookupSchema()
     fieldset_fields = {}
-    ordered_fieldsets = ['default']
+    ordered_fieldsets = ["default"]
     for fieldset in schema.queryTaggedValue(FIELDSETS_KEY, []):
         ordered_fieldsets.append(fieldset.__name__)
         fieldset_fields[fieldset.__name__] = fieldset.fields
 
-    if fieldset_fields.get('default', []):
-        fieldset_fields['default'] += non_fieldset_fields(schema)
+    if fieldset_fields.get("default", []):
+        fieldset_fields["default"] += non_fieldset_fields(schema)
     else:
-        fieldset_fields['default'] = non_fieldset_fields(schema)
+        fieldset_fields["default"] = non_fieldset_fields(schema)
 
     # Get the behavior fields
     fields = getFieldsInOrder(schema)
@@ -91,7 +96,7 @@ def get_ordered_fields(fti):
             fieldset_fields.setdefault(fieldset.__name__, []).extend(fieldset.fields)
             ordered_fieldsets.append(fieldset.__name__)
 
-        fieldset_fields['default'].extend(non_fieldset_fields(schema))
+        fieldset_fields["default"].extend(non_fieldset_fields(schema))
 
     ordered_fields = []
     for fieldset in ordered_fieldsets:
@@ -102,34 +107,31 @@ def get_ordered_fields(fti):
 
 
 def get_exportable(field, context, request):
-    """Get exportable from dexterity field, context and request
-    """
+    """Get exportable from dexterity field, context and request"""
     try:
         # check if there is a specific adapter for the field name
         exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable,
-            name=field.__name__)
+            (field, context, request), interface=IExportable, name=field.__name__
+        )
     except ComponentLookupError:
         # get the generic adapter for the field
-        exportable = getMultiAdapter(
-            (field, context, request),
-            interface=IExportable)
+        exportable = getMultiAdapter((field, context, request), interface=IExportable)
 
     return exportable
 
 
 def get_exportable_for_fieldname(context, fieldname, request):
-    """Get exportable from dexterity fieldname, context and request
-    """
+    """Get exportable from dexterity fieldname, context and request"""
     # get the field
-    field = [x for x in get_ordered_fields(context.getTypeInfo()) if x[0] == fieldname][0][1]
+    field = [x for x in get_ordered_fields(context.getTypeInfo()) if x[0] == fieldname][
+        0
+    ][1]
     return get_exportable(field, context, request)
 
 
 class DexterityFieldsExportableFactory(BaseExportableFactory):
-    """Get fields content schema
-    """
+    """Get fields content schema"""
+
     adapts(IDexterityFTI, Interface, Interface)
     weight = 100
 
@@ -137,20 +139,16 @@ class DexterityFieldsExportableFactory(BaseExportableFactory):
         fields = get_ordered_fields(self.fti)
         exportables = []
         for field in fields:
-            exportables.append(get_exportable(field[1],
-                                              self.context,
-                                              self.request))
+            exportables.append(get_exportable(field[1], self.context, self.request))
 
         return exportables
 
 
 class IFieldValueGetter(Interface):
-    """Adapter to get a value from fieldname
-    """
+    """Adapter to get a value from fieldname"""
 
     def get(self, fieldname):
-        """Get value from fieldname
-        """
+        """Get value from fieldname"""
 
 
 @implementer(IFieldValueGetter)
@@ -162,7 +160,7 @@ class DexterityValueGetter(object):
 
     def get(self, field):
         value = getattr(aq_base(self.context), field.__name__, None)
-        if hasattr(value, '__call__'):
+        if hasattr(value, "__call__"):
             value = value()
         return value
 
@@ -176,8 +174,7 @@ class BaseFieldRenderer(object):
         self.request = request
 
     def __repr__(self):
-        return "<%s - %s>" % (self.__class__.__name__,
-                              self.field.__name__)
+        return "<%s - %s>" % (self.__class__.__name__, self.field.__name__)
 
     def get_value(self, obj):
         return IFieldValueGetter(obj).get(self.field)
@@ -199,8 +196,7 @@ class BaseFieldRenderer(object):
             return value
 
     def render_collection_entry(self, obj, value):
-        """Render a value element if the field is a sub field of a collection
-        """
+        """Render a value element if the field is a sub field of a collection"""
         return safe_text(value or "")
 
     def render_style(self, obj, base_style):
@@ -220,10 +216,9 @@ class FileFieldRenderer(BaseFieldRenderer):
     adapts(INamedField, Interface, Interface)
 
     def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
+        """Gets the value to render in excel file from content value"""
         value = self.get_value(obj)
-        return value and value.filename or u""
+        return value and value.filename or ""
 
 
 class BooleanFieldRenderer(BaseFieldRenderer):
@@ -246,11 +241,11 @@ class DateFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         if not value:
-            return u""
+            return ""
         return value.strftime("%Y/%m/%d")
 
     def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd'
+        base_style.num_format_str = "yyyy/mm/dd"
         return base_style
 
 
@@ -266,11 +261,11 @@ class DateTimeFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         if not value:
-            return u""
+            return ""
         return value.strftime("%Y/%m/%d %H:%M")
 
     def render_style(self, obj, base_style):
-        base_style.num_format_str = 'yyyy/mm/dd'
+        base_style.num_format_str = "yyyy/mm/dd"
         return base_style
 
 
@@ -288,7 +283,9 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
             if not vocabulary:
                 vocabularyName = self.field.vocabularyName
                 if vocabularyName:
-                    vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(obj)
+                    vocabulary = getUtility(IVocabularyFactory, name=vocabularyName)(
+                        obj
+                    )
 
             if vocabulary:
                 try:
@@ -315,29 +312,32 @@ class ChoiceFieldRenderer(BaseFieldRenderer):
 
     def render_collection_entry(self, obj, value):
         voc_value = self._get_vocabulary_value(obj, value)
-        return voc_value and translate(voc_value, context=self.request) or u""
+        return voc_value and translate(voc_value, context=self.request) or ""
 
 
 class CollectionFieldRenderer(BaseFieldRenderer):
     adapts(ICollection, Interface, Interface)
 
-    separator = u"\n"
+    separator = "\n"
 
     def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
+        """Gets the value to render in excel file from content value"""
         value = self.get_value(obj)
         value_type = self.field.value_type
         if not value_type:
             value_type = self.field
 
         sub_renderer = getMultiAdapter(
-            (value_type, self.context, self.request),
-            interface=IExportable)
+            (value_type, self.context, self.request), interface=IExportable
+        )
 
-        return value and self.separator.join(
-            [sub_renderer.render_collection_entry(obj, v)
-             for v in value]) or u""
+        return (
+            value
+            and self.separator.join(
+                [sub_renderer.render_collection_entry(obj, v) for v in value]
+            )
+            or ""
+        )
 
 
 class TextFieldRenderer(BaseFieldRenderer):
@@ -349,15 +349,14 @@ class TextFieldRenderer(BaseFieldRenderer):
         return value
 
     def render_value(self, obj):
-        """Gets the value to render in excel file from content value
-        """
+        """Gets the value to render in excel file from content value"""
         value = self.get_value(obj)
         if not value or value == NO_VALUE:
             return ""
 
         text = safe_text(self._get_text(value))
         if len(text) > self.truncate_at + 3:
-            return text[:self.truncate_at] + u"..."
+            return text[: self.truncate_at] + "..."
 
         return text
 
@@ -366,8 +365,8 @@ class RichTextFieldRenderer(TextFieldRenderer):
     adapts(IRichText, Interface, Interface)
 
     def _get_text(self, value):
-        ptransforms = api.portal.get_tool('portal_transforms')
-        return ptransforms.convert('html_to_text', value.output).getData().strip()
+        ptransforms = api.portal.get_tool("portal_transforms")
+        return ptransforms.convert("html_to_text", value.output).getData().strip()
 
 
 class RelationFieldRenderer(BaseFieldRenderer):
@@ -378,7 +377,7 @@ class RelationFieldRenderer(BaseFieldRenderer):
         return self.render_collection_entry(obj, value)
 
     def render_collection_entry(self, obj, value):
-        return value and value.to_object and value.to_object.Title() or u""
+        return value and value.to_object and value.to_object.Title() or ""
 
 
 try:
@@ -393,15 +392,18 @@ try:
             fields = getFieldsInOrder(self.field.schema)
             field_renderings = []
             for fieldname, field in fields:
-                sub_renderer = getMultiAdapter((field,
-                                                self.context, self.request),
-                                               interface=IExportable)
-                field_renderings.append(u"%s : %s" % (
-                    sub_renderer.render_header(),
-                    sub_renderer.render_collection_entry(obj,
-                                                         value.get(fieldname))))
+                sub_renderer = getMultiAdapter(
+                    (field, self.context, self.request), interface=IExportable
+                )
+                field_renderings.append(
+                    "%s : %s"
+                    % (
+                        sub_renderer.render_header(),
+                        sub_renderer.render_collection_entry(obj, value.get(fieldname)),
+                    )
+                )
 
-            return u" / ".join([r for r in field_renderings])
+            return " / ".join([r for r in field_renderings])
 
         def render_value(self, obj):
             value = self.get_value(obj)
