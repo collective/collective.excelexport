@@ -166,16 +166,23 @@ plone.restapi
 To get an export via `rest api`_, query @collective.excelexport / @collective.excelexportcsv (with one @)
 
 
+Versions
+========
+
+- Version 2.x is for Plone 6+ only
+- Version 1.x is for Plone 4 / 5
+
+
 Tests status
 ============
 
-This add-on is tested using Travis CI. The current status of the add-on is:
+This add-on is tested using Github action. The current status of the add-on is:
 
-.. image:: https://secure.travis-ci.org/collective/collective.excelexport.png
-    :target: https://travis-ci.org/collective/collective.excelexport
+.. image:: https://github.com/collective/collective.excelexport/actions/workflows/main.yml/badge.svg
+    :target: https://github.com/collective/collective.excelexport/actions/workflows/main.yml
 
-.. image:: https://coveralls.io/repos/collective/collective.excelexport/badge.png?branch=master
-    :target: https://coveralls.io/r/collective/collective.excelexport?branch=master
+.. image:: https://coveralls.io/repos/github/collective/collective.excelexport/badge.svg
+    :target: https://coveralls.io/github/collective/collective.excelexport
 
 .. image:: http://img.shields.io/pypi/v/collective.excelexport.svg
    :alt: PyPI badge
