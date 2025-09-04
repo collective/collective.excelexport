@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-2.0 (unreleased)
+2.0 (2025-09-04)
 ----------------
 
 - Add Plone 6 compatibility, drop Plone 4 & Plone 5 compatibility
