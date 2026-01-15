@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-1.8.3 (unreleased)
+1.8.3 (2026-01-15)
 ------------------
 
 - Added Transifex.net service integration to manage the translation process.
@@ -14,20 +14,17 @@ Changelog
 - Updated the i18n support.
   [macagua]
 
-
 1.8.2 (2020-02-27)
 ------------------
 
 - Add Python 3 compatibility.
   [bsuttor]
 
-
 1.8.1 (2019-11-06)
 ------------------
 
 - Safely decode voc_value (fix encoding issue) + test
   [boulch]
-
 
 1.8 (2019-09-12)
 ----------------
@@ -156,7 +153,6 @@ CONFIGURATION_FIELDS constant has been removed, we now use a registry record: co
 
 - Rename search policy excelexport.search to avoid conflict with 'search' view.
   [thomasdesvenain]
-
 
 1.0 (2014-06-02)
 ----------------
