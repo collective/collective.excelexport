@@ -5,8 +5,10 @@ Changelog
 1.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add uninstall profile
+  [laulaz]
+- Avoid ComponentLookupError by being specific about what's being included in restapi.zcml
+  [sgeulette]
 
 1.8.3 (2026-01-15)
 ------------------
